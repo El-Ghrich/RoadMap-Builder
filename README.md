@@ -75,6 +75,37 @@ backend/src/node/
 ~~~
 
 ---
+### 🏗️ FrontEnd Structure: Feature-Based
+**Example Structure 
+~~~text
+src/
+ ├── features/
+ │     ├── collections/
+ │     │     ├── components/
+ │     │     │     ├── CollectionCard.jsx
+ │     │     │     ├── CollectionList.jsx
+ │     │     ├── pages/
+ │     │     │     └── CollectionsPage.jsx
+ │     │     ├── services/
+ │     │     │     └── collections.api.js
+ │     │     ├── hooks/
+ │     │     │     └── useCollections.js
+ │     │     ├── types/
+ │     │     │     └── collection.type.ts
+ │     │     ├── index.js
+ │     │
+ │     ├── books/
+ │     ├── auth/
+ │     ├── dashboard/
+ │
+ ├── components/   // composants UI réutilisables
+ ├── context/      // AppContext, UserContext…
+ ├── hooks/
+ ├── services/     // API génériques (axios config, http)
+ ├── utils/
+ ├── App.jsx
+ └── main.jsx
+~~~
 
 ## ⚡ Getting Started
 
@@ -86,8 +117,8 @@ backend/src/node/
 ### 1. Installation
 Clone the repository:
 ~~~bash
-git clone [https://github.com/your-org/roadmap-builder.git](https://github.com/your-org/roadmap-builder.git)
-cd roadmap-builder
+git clone [https://github.com/El-Ghrich/RoadMap-Builder.git](https://github.com/El-Ghrich/RoadMap-Builder.git)
+cd RoadMap-builder
 ~~~
 
 ### 2. Environment Setup
