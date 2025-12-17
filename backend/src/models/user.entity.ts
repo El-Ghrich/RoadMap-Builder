@@ -16,7 +16,7 @@ export class UserEntity {
   @IsNotEmpty({ message: "L'email est obligatoire" })
   email!: string;
 
-  @Column({ type: "varchar", length: 255, select: false })
+  @Column({ type: "varchar", length: 255 })
   @MinLength(8, { message: "Le mot de passe doit faire au moins 8 caractères" })
   password!: string;
 

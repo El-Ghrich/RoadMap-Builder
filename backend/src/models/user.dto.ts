@@ -33,3 +33,12 @@ export class UserResponseDto {
     return dto;
   }
 }
+
+export class LoginRequestDto{
+    @IsEmail()
+    @IsNotEmpty()
+    email!:string;
+    @IsString()
+    @MinLength(8, { message: "Le mot de passe est trop court" })
+    password!:string;
+}

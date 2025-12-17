@@ -2,7 +2,7 @@
 import { UserService } from "./user.service";
 
 import { Request ,Response} from "express";
-import { UserRequestDto } from "./user.dto";
+import { LoginRequestDto, UserRequestDto } from "./user.dto";
 export class UserController {
     constructor(private userService: UserService) { }
 
@@ -32,6 +32,29 @@ export class UserController {
                 status: "error",
                 message: err.message || "Internal server error"
             });
+        }
+    }
+    async login(req: Request, res: Response) {
+        try {
+            const userData :LoginRequestDto = req.body;
+            const { user, accessToken, refreshToken } = await this.userService.login(userData);
+            
+            res.cookie('accessToken', accessToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                maxAge: 15 * 60 * 1000 
+            });
+
+            
+            res.cookie('refreshToken', refreshToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                maxAge: 7 * 24 * 60 * 60 * 1000 
+            });
+
+            return res.status(200).json({ message: "Login successful", user });
+        } catch (err: any) {
+            return res.status(401).json({ message: err.message });
         }
     }
 }

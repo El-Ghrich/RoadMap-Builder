@@ -6,6 +6,6 @@ export async function hashPassword(password:string){
     return await bcrypt.hash(password,10)
 }
 
-export async function MatchingPassword(passwordEntry:string,password:string){
+export async function MatchingPassword(passwordEntry:string,password:string) :Promise<Boolean>{
     return await bcrypt.compare(passwordEntry,password);
 }

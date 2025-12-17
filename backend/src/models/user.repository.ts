@@ -1,7 +1,7 @@
 import { Repository } from "typeorm";
 import { AppDataSource } from "../config/postgres.config"; // Ton DataSource TypeORM
 import { UserEntity } from "./user.entity";
-import { IUserRepository } from "../interface/user/user.repository.interface";
+import { IUserRepository } from "../interface/user/user.interface";
 import { UserRequestDto } from "./user.dto";
 
 export class UserRepository implements IUserRepository {
