@@ -10,7 +10,7 @@ export class UserService {
         return jwt.sign({ id: user.id, email: user.email }, secret, { expiresIn, algorithm: 'HS256' } as any);
     }
     
-   async signUp(userdata:UserRequestDto):Promise<UserResponseDto>{
+   async signUp (userdata:UserRequestDto):Promise<UserResponseDto> {
           const { email, password, username } = userdata;
           if(!email || !password || !username){
             throw new Error('missing value')
@@ -63,7 +63,7 @@ export class UserService {
     const newAccessToken = this.generateToken(user, process.env.JWT_ACCESS_SECRET!, '15m');
     const newRefreshToken = this.generateToken(user, process.env.JWT_REFRESH_SECRET!, '7d');
     
-    return { newAccessToken, newRefreshToken };
+    return { newAccessToken , newRefreshToken };
   }
 
    
