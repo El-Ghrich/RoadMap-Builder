@@ -24,8 +24,6 @@ export class UserEntity {
   @IsOptional()
   @IsUrl({}, { message: "L'avatar doit être une URL valide" })
   avatar!: string;
-  @Column({ type: "boolean", default: false })
-  rememberMe!: boolean;
   @CreateDateColumn()
   createdAt!: Date;
 

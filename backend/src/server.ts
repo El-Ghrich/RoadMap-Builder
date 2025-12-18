@@ -1,4 +1,3 @@
-import { DatabaseFactory } from "./config/database.factory";
 import "reflect-metadata";
 import app from "./app";
 import { AppDataSource } from "./config/dbConfig";

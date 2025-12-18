@@ -64,7 +64,7 @@ describe('Auth Integration Tests', () => {
         it('should login successfully and set secure cookies', async () => {
             const response = await request(app)
                 .post('/api/auth/login')
-                .send(userCredentials);
+                .send({...userCredentials ,rememberMe: true});
 
             expect(response.status).toBe(200);
             expect(response.body).toHaveProperty('user');
@@ -74,6 +74,19 @@ describe('Auth Integration Tests', () => {
             expect(cookies?.some(c => c.includes('accessToken'))).toBe(true);
             expect(cookies?.some(c => c.includes('refreshToken'))).toBe(true);
         });
+        it('should login without rememberMe and set only access token cookie', async () => {
+            const response = await request(app)
+                .post('/api/auth/login')
+                .send(userCredentials); 
+
+            expect(response.status).toBe(200);
+
+            const cookies = response.get('Set-Cookie');
+            expect(cookies).toBeDefined();
+
+            expect(cookies?.some(c => c.includes('accessToken'))).toBe(true);
+            expect(cookies?.some(c => c.includes('refreshToken'))).toBe(false);
+});
 
         it('should fail with 401 for wrong password', async () => {
             const response = await request(app)

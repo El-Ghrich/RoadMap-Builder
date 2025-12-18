@@ -3,6 +3,8 @@ import { UserService } from "./user.service";
 
 import { Request ,Response} from "express";
 import { LoginRequestDto, UserRequestDto } from "./user.dto";
+import { plainToInstance } from "class-transformer";
+import { validateOrReject } from "class-validator";
 export class UserController {
     constructor(private userService: UserService) { }
 
@@ -36,7 +38,13 @@ export class UserController {
     }
     async login(req: Request, res: Response) {
         try {
-            const userData :LoginRequestDto = req.body;
+            
+            const userData :LoginRequestDto = plainToInstance(LoginRequestDto,req.body);
+            await validateOrReject(userData, { 
+            whitelist: true,              
+            forbidNonWhitelisted: true    
+            });
+
             const { user, accessToken, refreshToken } = await this.userService.login(userData);
             
             res.cookie('accessToken', accessToken, {
@@ -45,16 +53,34 @@ export class UserController {
                 maxAge: 15 * 60 * 1000 
             });
 
-            
-            res.cookie('refreshToken', refreshToken, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                maxAge: 7 * 24 * 60 * 60 * 1000 
-            });
+            if(refreshToken != null){
+                res.cookie('refreshToken', refreshToken, {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === 'production',
+                    maxAge: 7 * 24 * 60 * 60 * 1000 
+                });
+
+            }
 
             return res.status(200).json({ message: "Login successful", user });
         } catch (err: any) {
             return res.status(401).json({ message: err.message });
         }
     }
+
+    async refreshToken(req: Request, res: Response) {
+    try {
+      const token = req.cookies.refreshToken;
+      if (!token) return res.status(401).json({ message: 'No refresh token' });
+
+      const { newAccessToken, newRefreshToken } = await this.userService.refreshToken(token);
+
+      res.cookie('accessToken', newAccessToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', maxAge: 15 * 60 * 1000, sameSite: 'strict' });
+      res.cookie('refreshToken', newRefreshToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', maxAge: 7 * 24 * 60 * 60 * 1000, sameSite: 'strict' });
+
+      res.status(200).json({ message: 'Token refreshed' });
+    } catch (err) {
+      res.status(401).json({ message: 'Invalid or expired refresh token' });
+    }
+  }
 }
