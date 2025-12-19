@@ -57,4 +57,13 @@ export class UserController {
             return res.status(401).json({ message: err.message });
         }
     }
-}
+
+     async logout(req:Request,res:Response){
+         res.clearCookie('accessToken');
+         res.clearCookie('refreshToken');
+        return res.status(200).json({
+            message:"Logout successful"
+        });
+
+     }
+}   

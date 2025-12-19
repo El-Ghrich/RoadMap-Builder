@@ -1,9 +1,13 @@
 import { Request, Router ,Response, RequestParamHandler } from "express";
 
 import { userController } from "./user.registry";
+import {checkAuth} from "../middlewares/checkAuth";
 
 export const userRouter = Router();
 
 
-userRouter.post('/signup', (req:Request,res:Response)=> userController.signUp(req,res) );
-userRouter.post('/login', (req:Request,res:Response)=> userController.login(req,res));
+userRouter.post('/signup',  userController.signUp );
+userRouter.post('/login', userController.login);
+userRouter.use(checkAuth)
+
+userRouter.get("/logout" , userController.logout);
