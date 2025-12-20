@@ -4,12 +4,13 @@ import { hashPassword, MatchingPassword } from "../../utils/HashPassword";
 import { LoginRequestDto, UserRequestDto, UserResponseDto } from "./user.dto";
 import jwt from 'jsonwebtoken';
 import { UserEntity } from './user.entity';
+import { RefreshTokenService } from "../refreshToken/refreshToken.service";
 
 export class UserService {
-    constructor(private userRepo:IUserRepository){ }
-    private generateToken(user: UserEntity, expiresIn: string, secret: string ) {
-        return jwt.sign({ id: user.id, email: user.email }, secret, { expiresIn, algorithm: 'HS256' } as any);
-    }
+    constructor(private userRepo:IUserRepository,
+               private tokenService: RefreshTokenService
+    ){ }
+   
     
    async signUp (userdata:UserRequestDto):Promise<UserResponseDto> {
           const { email, password, username } = userdata;
@@ -42,21 +43,30 @@ export class UserService {
         const isMatch = await MatchingPassword(password,user.password);
         if (!isMatch) throw new Error('Invalid credentials');
 
-        let refreshToken :string | null = null;
-        if (loginDto.rememberMe) {
-          refreshToken = this.generateToken(
-            user,
-            "7d",
-            process.env.JWT_REFRESH_SECRET!
-    );
-  }
-        const accessToken = this.generateToken(user, '15m', process.env.JWT_ACCESS_SECRET!);
-        
-        return { user: UserResponseDto.fromEntity(user), accessToken, refreshToken };
+       let accessToken: string;
+       let refreshToken: string | null = null;
+
+              if (loginDto.rememberMe == true) {
+                 
+                  const tokens = await this.tokenService.createFullSession(user);
+                  accessToken = tokens.accessToken;
+                  refreshToken = tokens.refreshToken;
+
+              } else {
+                
+                  accessToken = this.tokenService.createAccessTokenOnly(user);
+                  refreshToken = null;
+                 
+              }
+              return { 
+                  user: UserResponseDto.fromEntity(user), 
+                  accessToken, 
+                  refreshToken 
+              };
     }
 
 
-    async refreshToken(oldToken: string) {
+ /*    async refreshToken(oldToken: string) {
     const payload = jwt.verify(oldToken, process.env.JWT_REFRESH_SECRET!) as any;
     const user = await this.userRepo.findById(payload.id);
     if (!user) throw new Error('User not found');
@@ -65,7 +75,7 @@ export class UserService {
     const newRefreshToken = this.generateToken(user, process.env.JWT_REFRESH_SECRET!, '7d');
     
     return { newAccessToken , newRefreshToken };
-  }
+  } */
 
    
 

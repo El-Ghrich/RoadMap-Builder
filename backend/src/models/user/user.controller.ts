@@ -67,7 +67,7 @@ export class UserController {
         }
     }
 
-    async refreshToken(req: Request, res: Response) {
+  /*   async refreshToken(req: Request, res: Response) {
     try {
       const token = req.cookies.refreshToken;
       if (!token) return res.status(401).json({ message: 'No refresh token' });
@@ -81,5 +81,5 @@ export class UserController {
     } catch (err) {
       res.status(401).json({ message: 'Invalid or expired refresh token' });
     }
-  }
+  } */
 }

@@ -1,6 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from "typeorm";
 import { IsEmail, IsNotEmpty, IsString, MinLength, IsOptional, IsUrl } from "class-validator";
-
+import { RefreshTokenEntity } from "../refreshToken/refreshToken.entity";
 @Entity("users")
 export class UserEntity {
   @PrimaryGeneratedColumn("uuid")
@@ -26,7 +26,8 @@ export class UserEntity {
   avatar!: string;
   @CreateDateColumn()
   createdAt!: Date;
-
+  @OneToMany(() => RefreshTokenEntity, (token) => token.user)
+  refreshTokens!: RefreshTokenEntity[];
   @UpdateDateColumn()
   updatedAt!: Date;
 }
