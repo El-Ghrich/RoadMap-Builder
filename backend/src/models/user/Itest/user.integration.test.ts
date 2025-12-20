@@ -5,8 +5,8 @@ import { AppDataSource } from '../../../config/dbConfig';
 
 describe('Auth Integration Tests', () => {
 
-    beforeAll(async () => {      
-        await AppDataSource.connect();   
+    beforeAll(async () => {
+        await AppDataSource.connect();
     });
 
     afterAll(async () => {
@@ -30,6 +30,7 @@ describe('Auth Integration Tests', () => {
                 .send(signupPayload);
 
             expect(response.status).toBe(201);
+            expect(response.body.success).toBe(true);
             expect(response.body.message).toBe("User created successfully");
             expect(response.body.data.email).toBe(signupPayload.email);
             expect(response.body.data).not.toHaveProperty('password');
@@ -43,6 +44,7 @@ describe('Auth Integration Tests', () => {
                 .send(signupPayload);
 
             expect(response.status).toBe(409);
+            expect(response.body.success).toBe(false);
             expect(response.body.message).toContain('exist');
         });
     });
@@ -64,11 +66,12 @@ describe('Auth Integration Tests', () => {
         it('should login successfully and set secure cookies', async () => {
             const response = await request(app)
                 .post('/api/auth/login')
-                .send({...userCredentials ,rememberMe: true});
+                .send({ ...userCredentials, rememberMe: true });
 
             expect(response.status).toBe(200);
-            expect(response.body).toHaveProperty('user');
-            
+            expect(response.body.success).toBe(true);
+            expect(response.body.data).toHaveProperty('email');
+
             const cookies = response.get('Set-Cookie');
             expect(cookies).toBeDefined();
             expect(cookies?.some(c => c.includes('accessToken'))).toBe(true);
@@ -77,7 +80,7 @@ describe('Auth Integration Tests', () => {
         it('should login without rememberMe and set only access token cookie', async () => {
             const response = await request(app)
                 .post('/api/auth/login')
-                .send(userCredentials); 
+                .send(userCredentials);
 
             expect(response.status).toBe(200);
 
@@ -86,7 +89,7 @@ describe('Auth Integration Tests', () => {
 
             expect(cookies?.some(c => c.includes('accessToken'))).toBe(true);
             expect(cookies?.some(c => c.includes('refreshToken'))).toBe(false);
-});
+        });
 
         it('should fail with 401 for wrong password', async () => {
             const response = await request(app)

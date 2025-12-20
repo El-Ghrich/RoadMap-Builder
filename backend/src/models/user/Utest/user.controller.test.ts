@@ -53,10 +53,11 @@ describe('UserController Unit Tests', () => {
       );
 
       expect(statusSpy).toHaveBeenCalledWith(201);
-      expect(jsonSpy).toHaveBeenCalledWith({
+      expect(jsonSpy).toHaveBeenCalledWith(expect.objectContaining({
         message: 'User created successfully',
-        data: user
-      });
+        data: user,
+        success: true
+      }));
     });
 
     it('should return 409 when signup fails', async () => {
@@ -78,86 +79,86 @@ describe('UserController Unit Tests', () => {
       );
 
       expect(statusSpy).toHaveBeenCalledWith(409);
-      expect(jsonSpy).toHaveBeenCalledWith({
-        status: 'error',
+      expect(jsonSpy).toHaveBeenCalledWith(expect.objectContaining({
+        success: false,
         message: 'email is already exist'
-      });
+      }));
     });
   });
 
-/*   describe('login', () => {
-    it('should set accessToken and refreshToken when rememberMe is true', async () => {
-      mockRequest = {
-        body: {
-          email: 'said@gmail.com',
-          password: '123',
-          rememberMe: true
-        }
-      };
-
-      mockUserService.login.mockResolvedValue({
-        user: { id: '1', username: 'said' },
-        accessToken: 'access_token',
-        refreshToken: 'refresh_token'
+  /*   describe('login', () => {
+      it('should set accessToken and refreshToken when rememberMe is true', async () => {
+        mockRequest = {
+          body: {
+            email: 'said@gmail.com',
+            password: '123',
+            rememberMe: true
+          }
+        };
+  
+        mockUserService.login.mockResolvedValue({
+          user: { id: '1', username: 'said' },
+          accessToken: 'access_token',
+          refreshToken: 'refresh_token'
+        });
+  
+        await userController.login(
+          mockRequest as Request,
+          mockResponse as Response
+        );
+  
+        expect(statusSpy).toHaveBeenCalledWith(200);
+        expect(cookieSpy).toHaveBeenCalledWith(
+          'accessToken',
+          'access_token',
+          expect.any(Object)
+        );
+        expect(cookieSpy).toHaveBeenCalledWith(
+          'refreshToken',
+          'refresh_token',
+          expect.any(Object)
+        );
+        expect(jsonSpy).toHaveBeenCalledWith({
+          message: 'Login successful',
+          user: { id: '1', username: 'said' }
+        });
       });
-
-      await userController.login(
-        mockRequest as Request,
-        mockResponse as Response
-      );
-
-      expect(statusSpy).toHaveBeenCalledWith(200);
-      expect(cookieSpy).toHaveBeenCalledWith(
-        'accessToken',
-        'access_token',
-        expect.any(Object)
-      );
-      expect(cookieSpy).toHaveBeenCalledWith(
-        'refreshToken',
-        'refresh_token',
-        expect.any(Object)
-      );
-      expect(jsonSpy).toHaveBeenCalledWith({
-        message: 'Login successful',
-        user: { id: '1', username: 'said' }
+  
+      it('should set only accessToken when rememberMe is false', async () => {
+        mockRequest = {
+          body: {
+            email: 'said@gmail.com',
+            password: '123',
+            rememberMe: false
+          }
+        };
+  
+        mockUserService.login.mockResolvedValue({
+          user: { id: '1', username: 'said' },
+          accessToken: 'access_token',
+          refreshToken: 'refresh_token'
+        });
+  
+        await userController.login(
+          mockRequest as Request,
+          mockResponse as Response
+        );
+  
+        expect(statusSpy).toHaveBeenCalledWith(200);
+        expect(cookieSpy).toHaveBeenCalledWith(
+          'accessToken',
+          'access_token',
+          expect.any(Object)
+        );
+        expect(cookieSpy).not.toHaveBeenCalledWith(
+          'refreshToken',
+          expect.anything(),
+          expect.anything()
+        );
+        expect(jsonSpy).toHaveBeenCalledWith({
+          message: 'Login successful',
+          user: { id: '1', username: 'said' }
+        });
       });
-    });
-
-    it('should set only accessToken when rememberMe is false', async () => {
-      mockRequest = {
-        body: {
-          email: 'said@gmail.com',
-          password: '123',
-          rememberMe: false
-        }
-      };
-
-      mockUserService.login.mockResolvedValue({
-        user: { id: '1', username: 'said' },
-        accessToken: 'access_token',
-        refreshToken: 'refresh_token'
-      });
-
-      await userController.login(
-        mockRequest as Request,
-        mockResponse as Response
-      );
-
-      expect(statusSpy).toHaveBeenCalledWith(200);
-      expect(cookieSpy).toHaveBeenCalledWith(
-        'accessToken',
-        'access_token',
-        expect.any(Object)
-      );
-      expect(cookieSpy).not.toHaveBeenCalledWith(
-        'refreshToken',
-        expect.anything(),
-        expect.anything()
-      );
-      expect(jsonSpy).toHaveBeenCalledWith({
-        message: 'Login successful',
-        user: { id: '1', username: 'said' }
-      });
-    });
-  }); */
+    }); */
 });

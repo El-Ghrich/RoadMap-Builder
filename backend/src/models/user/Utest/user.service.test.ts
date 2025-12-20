@@ -6,6 +6,7 @@ import * as HashUtils from '../../../utils/HashPassword';
 describe('UserService Unit Tests', () => {
   let userService: UserService;
   let mockUserRepository: jest.Mocked<IUserRepository>;
+  let mockTokenService: any;
 
   beforeEach(() => {
     mockUserRepository = {
@@ -15,7 +16,15 @@ describe('UserService Unit Tests', () => {
       findById: jest.fn()
     } as any;
 
-    userService = new UserService(mockUserRepository);
+    mockTokenService = {
+      createFullSession: jest.fn().mockResolvedValue({
+        accessToken: 'access_token',
+        refreshToken: 'refresh_token'
+      }),
+      createAccessTokenOnly: jest.fn().mockReturnValue('access_token')
+    };
+
+    userService = new UserService(mockUserRepository, mockTokenService);
     process.env.JWT_ACCESS_SECRET = 'test_access_secret';
     process.env.JWT_REFRESH_SECRET = 'test_refresh_secret';
   });
