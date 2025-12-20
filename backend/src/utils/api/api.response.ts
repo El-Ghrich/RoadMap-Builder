@@ -1,4 +1,3 @@
-// src/common/api.response.ts
 
 export class ApiResponse<T> {
   public success: boolean;
@@ -15,12 +14,10 @@ export class ApiResponse<T> {
     this.timestamp = new Date();
   }
 
-  // Méthode statique pour une réponse en SUCCÈS
   static success<T>(data: T, message: string = "Operation successful"): ApiResponse<T> {
     return new ApiResponse<T>(true, message, data);
   }
 
-  // Méthode statique pour une réponse en ERREUR
   static error(message: string, errorDetails?: any): ApiResponse<null> {
     return new ApiResponse<null>(false, message, null, errorDetails);
   }
