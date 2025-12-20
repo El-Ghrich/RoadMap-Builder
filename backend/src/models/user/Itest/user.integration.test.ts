@@ -21,7 +21,10 @@ describe('Auth Integration Tests', () => {
         const signupPayload = {
             username: 'said_test',
             email: 'said@gmail.com',
-            password: 'password123'
+            password: 'password123',
+            firstName:'said',
+            lastName:'nichan',
+            age:21
         };
 
         it('should register a new user and return 201', async () => {
