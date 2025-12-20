@@ -17,14 +17,14 @@ export class RefreshTokenService {
 
         private signAccessToken(userId: string): string {
 
-          return jwt.sign({ id: userId }, process.env.JWT_ACCESS_SECRET!, { expiresIn: "15m" });
+          return jwt.sign({ id: userId }, process.env.JWT_ACCESS_SECRET!, { expiresIn: "10s" });
 
         }
 
 
         private signRefreshToken(userId: string): string {
 
-          return jwt.sign({ id: userId }, process.env.JWT_REFRESH_SECRET!, { expiresIn: "7d" });
+          return jwt.sign({ id: userId }, process.env.JWT_REFRESH_SECRET!, { expiresIn: "2m" });
 
         }
 
@@ -44,7 +44,7 @@ export class RefreshTokenService {
           await this.tokenRepo.create({
             userId: user.id,
             tokenHash: this.hashToken(refreshToken),
-            expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), 
+            expiresAt: new Date(Date.now() + 2 * 60 * 1000), 
             isRevoked: false
           });
 
@@ -58,7 +58,7 @@ export class RefreshTokenService {
           let payload: any;
           try {
 
-            payload = jwt.verify(incomingToken, process.env.REFRESH_TOKEN_SECRET!);
+            payload = jwt.verify(incomingToken, process.env.JWT_REFRESH_SECRET!);
 
           } catch (error) {
             throw new Error("Token invalide ou expiré");
@@ -88,7 +88,7 @@ export class RefreshTokenService {
           await this.tokenRepo.create({
             userId: existingToken.userId,
             tokenHash: newRefreshTokenHash,
-            expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+            expiresAt: new Date(Date.now() +2 * 60 * 1000),
             isRevoked: false
           });
 

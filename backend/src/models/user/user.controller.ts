@@ -38,14 +38,16 @@ export class UserController {
             res.cookie('accessToken', accessToken, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
-                maxAge: 15 * 60 * 1000 
+                maxAge:10 * 1000,
+                path: "/" 
             });
 
             if(refreshToken != null){
                 res.cookie('refreshToken', refreshToken, {
                     httpOnly: true,
                     secure: process.env.NODE_ENV === 'production',
-                    maxAge: 7 * 24 * 60 * 60 * 1000 
+                    maxAge: 2 * 60 * 1000,
+                    path: "/" 
                 });
 
             }
