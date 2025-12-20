@@ -1,43 +1,62 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from "typeorm";
-import { IsEmail, IsNotEmpty, IsString, MinLength, IsOptional, IsUrl } from "class-validator";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToMany,
+} from "typeorm";
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+  IsOptional,
+  IsUrl,
+} from "class-validator";
 import { RefreshTokenEntity } from "../refreshToken/refreshToken.entity";
+
 @Entity("users")
 export class UserEntity {
+  @PrimaryGeneratedColumn("uuid")
+  id!: string;
 
-  
-        @PrimaryGeneratedColumn("uuid")
-        id!: string;
-        @Column({ type: "varchar", length: 50 })
-        firstName!: string;
-        @Column({ type: "varchar", length: 50 })
-        lastName!: string;
-        @Column({ type: "int", nullable: true })
-        age?: number;
-        @Column({ default: true })
-        isActive!: boolean;
+  @Column({ type: "varchar", length: 50 ,default: "Unknown"})
+  firstName!: string;
 
-        @Column({ type: "varchar", length: 50, unique: true })
-        @IsString()
-        @IsNotEmpty({ message: "Le nom d'utilisateur est obligatoire" })
-        username!: string;
+  @Column({ type: "varchar", length: 50 ,default: "Unknown"})
+  lastName!: string;
 
-        @Column({ type: "varchar", length: 100, unique: true })
-        @IsEmail({}, { message: "Format d'email invalide" })
-        @IsNotEmpty({ message: "L'email est obligatoire" })
-        email!: string;
+  @Column({ type: "int", nullable: true })
+  age?: number;
 
-        @Column({ type: "varchar", length: 255 })
-        @MinLength(8, { message: "Le mot de passe doit faire au moins 8 caractères" })
-        password!: string;
 
-        @Column({ type: "varchar", length: 255, nullable: true })
-        @IsOptional()
-        @IsUrl({}, { message: "L'avatar doit être une URL valide" })
-        avatar!: string;
-        @CreateDateColumn()
-        createdAt!: Date;
-        @OneToMany(() => RefreshTokenEntity, (token) => token.user)
-        refreshTokens!: RefreshTokenEntity[];
-        @UpdateDateColumn()
-        updatedAt!: Date;
+  @Column({ type: "boolean", default: true })
+  isActive!: boolean;
+
+  @Column({ type: "varchar", length: 50, unique: true })
+  @IsString({ message: "Username must be a string" })
+  @IsNotEmpty({ message: "Username is required" })
+  username!: string;
+
+  @Column({ type: "varchar", length: 100, unique: true })
+  @IsEmail({}, { message: "Invalid email format" })
+  @IsNotEmpty({ message: "Email is required" })
+  email!: string;
+
+  @Column({ type: "varchar", length: 255 })
+  password!: string;
+
+  @Column({ type: "varchar", length: 255, nullable: true })
+  @IsOptional()
+  @IsUrl({}, { message: "Avatar must be a valid URL" })
+  avatar!: string;
+
+  @CreateDateColumn()
+  createdAt!: Date;
+
+  @OneToMany(() => RefreshTokenEntity, (token) => token.user)
+  refreshTokens!: RefreshTokenEntity[];
+
+  @UpdateDateColumn()
+  updatedAt!: Date;
 }
