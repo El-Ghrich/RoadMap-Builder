@@ -8,7 +8,7 @@ dotenv.config();
 
 const app = express();
 
-
+app.set('json spaces', 2);
 app.use(cookieParser());
 app.use(express.json());
 app.use(cors());

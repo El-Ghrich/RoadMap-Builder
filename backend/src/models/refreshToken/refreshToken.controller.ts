@@ -5,16 +5,6 @@ export class RefreshTokenController {
   constructor(private refreshTokenService: RefreshTokenService) {}
 
 
-  private setCookie(res: Response, token: string) {
-    res.cookie("refreshToken", token, {
-      httpOnly: true,  
-      secure: process.env.NODE_ENV === "production", 
-      sameSite: "strict", 
-      maxAge: 7 * 24 * 60 * 60 * 1000, 
-      path: "/" 
-    });
-  }
-
   async refresh(req: Request, res: Response) {
     const incomingToken = req.cookies.refreshToken;
 
@@ -42,7 +32,7 @@ export class RefreshTokenController {
       maxAge: 15 * 60 * 1000,
       path: "/"
       });
-      
+       return res.status(200).json({ message: "Refresh réussi" });
 
     } catch (error) {
       

@@ -1,37 +1,40 @@
 import { UserService } from "./user.service";
-
 import { Request, Response } from "express";
-import { LoginRequestDto, UserRequestDto } from "./user.dto";
-import { plainToInstance } from "class-transformer";
-import { validateOrReject } from "class-validator";
+import { ApiResponse } from "../../utils/api/api.response";
+import { ValidationError } from "class-validator";
 export class UserController {
     constructor(private userService: UserService) { }
 
-    async signUp(req: Request, res: Response): Promise<Response> {
+   async signUp(req: Request, res: Response): Promise<Response> {
         try {
            
-
             const user = await this.userService.signUp(req.body);
 
-            return res.status(201).json({
-                message: "User created successfully",
-                data: user
-            });
+           
+            return res.status(201).json(
+                ApiResponse.success(user, "User created successfully")
+            );
 
         } catch (err: any) {
            
+            if (Array.isArray(err) && err[0] instanceof ValidationError) {
+                const validationErrors = err.map(e => Object.values(e.constraints || {})).flat();
+                return res.status(400).json(
+                    ApiResponse.error("Validation failed", validationErrors)
+                );
+            }
+
+           
             const statusCode = err.message.includes('exist') ? 409 : 500;
-            
-            return res.status(statusCode).json({
-                status: "error",
-                message: err.message || "Internal server error"
-            });
+            return res.status(statusCode).json(
+                ApiResponse.error(err.message || "Internal server error")
+            );
         }
     }
+
     async login(req: Request, res: Response) {
         try {
             
-        
 
             const { user, accessToken, refreshToken } = await this.userService.login(req.body);
             
@@ -47,12 +50,21 @@ export class UserController {
                     secure: process.env.NODE_ENV === 'production',
                     maxAge: 7 * 24 * 60 * 60 * 1000 
                 });
-
             }
 
-            return res.status(200).json({ message: "Login successful", user });
+            return res.status(200).json(
+                ApiResponse.success(user, "Login successful")
+            );
+
         } catch (err: any) {
-            return res.status(401).json({ message: err.message });
+       
+            if (Array.isArray(err) && err.length > 0 && err[0] instanceof ValidationError) {
+                 return res.status(400).json(ApiResponse.error("Validation failed", err));
+            }
+
+            return res.status(401).json(
+                ApiResponse.error(err.message || "Authentication failed")
+            );
         }
     }
 
@@ -71,19 +83,5 @@ export class UserController {
         }
       }
 
-  /*   async refreshToken(req: Request, res: Response) {
-    try {
-      const token = req.cookies.refreshToken;
-      if (!token) return res.status(401).json({ message: 'No refresh token' });
-
-      const { newAccessToken, newRefreshToken } = await this.userService.refreshToken(token);
-
-      res.cookie('accessToken', newAccessToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', maxAge: 15 * 60 * 1000, sameSite: 'strict' });
-      res.cookie('refreshToken', newRefreshToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', maxAge: 7 * 24 * 60 * 60 * 1000, sameSite: 'strict' });
-
-      res.status(200).json({ message: 'Token refreshed' });
-    } catch (err) {
-      res.status(401).json({ message: 'Invalid or expired refresh token' });
-    }
-  } */
+  
 }
