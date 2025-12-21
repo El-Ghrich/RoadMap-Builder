@@ -2,11 +2,12 @@ import { RefreshTokenRepository } from "./refreshToken.repository";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import { UserEntity } from "../user/user.entity";
+import { IRefreshTokenRepository } from "./interface/refreshToken.interface";
 
-export class RefreshTokenService {
+export class RefreshTokenService  {
 
 
-  constructor(private tokenRepo: RefreshTokenRepository) { }
+  constructor(private tokenRepo: IRefreshTokenRepository) { }
 
   private hashToken(token: string): string {
 

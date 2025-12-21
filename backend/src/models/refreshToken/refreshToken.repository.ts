@@ -1,9 +1,10 @@
 import { RefreshTokenEntity } from "./refreshToken.entity";
 import { AppDataSource } from "../../config/dbConfig";
 import { Repository } from "typeorm";
+import { IRefreshTokenRepository } from "./interface/refreshToken.interface";
 
 
-export class RefreshTokenRepository {
+export class RefreshTokenRepository  implements IRefreshTokenRepository{
 
     private repo : Repository<RefreshTokenEntity>;
     constructor(){

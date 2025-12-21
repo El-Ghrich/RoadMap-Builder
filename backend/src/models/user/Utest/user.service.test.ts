@@ -121,4 +121,30 @@ describe('UserService Unit Tests', () => {
       ).rejects.toThrow('Invalid credentials');
     });
   });
+
+  describe('getProfil', () => {
+    it('should return user profile if found', async () => {
+      const mockUser = {
+        id: '1',
+        username: 'said',
+        email: 'said@gmail.com',
+        firstName: 'said',
+        lastName: 'nichan'
+      };
+
+      mockUserRepository.findById.mockResolvedValue(mockUser as any);
+
+      const result = await userService.getProfil('1');
+
+      expect(result.user).toBeDefined();
+      expect(result.user.username).toBe('said');
+      expect(mockUserRepository.findById).toHaveBeenCalledWith('1');
+    });
+
+    it('should throw error if user not found', async () => {
+      mockUserRepository.findById.mockResolvedValue(null);
+
+      await expect(userService.getProfil('999')).rejects.toThrow('User not found');
+    });
+  });
 });

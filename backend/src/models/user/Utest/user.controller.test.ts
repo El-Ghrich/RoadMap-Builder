@@ -13,7 +13,8 @@ describe('UserController Unit Tests', () => {
   beforeEach(() => {
     mockUserService = {
       signUp: jest.fn(),
-      login: jest.fn()
+      login: jest.fn(),
+      getProfil: jest.fn()
     };
 
     userController = new UserController(mockUserService);
@@ -160,5 +161,65 @@ describe('UserController Unit Tests', () => {
           user: { id: '1', username: 'said' }
         });
       });
-    }); */
+  }); */
+
+  describe('getProfil', () => {
+    it('should return 200 and user profile when successful', async () => {
+      mockRequest = {
+        userId: '1'
+      };
+
+      const profil = {
+        user: {
+          username: 'said',
+          email: 'said@gmail.com'
+        }
+      };
+
+      mockUserService.getProfil.mockResolvedValue(profil);
+
+      await userController.getProfil(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      expect(statusSpy).toHaveBeenCalledWith(200);
+      expect(jsonSpy).toHaveBeenCalledWith(expect.objectContaining({
+        success: true,
+        message: 'User Profil',
+        data: profil
+      }));
+    });
+
+    it('should return 401 when userId is missing', async () => {
+      mockRequest = {};
+
+      await userController.getProfil(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      expect(statusSpy).toHaveBeenCalledWith(401);
+      expect(jsonSpy).toHaveBeenCalledWith(expect.objectContaining({
+        success: false,
+        message: 'User ID missing from request'
+      }));
+    });
+
+    it('should return 404 when user not found', async () => {
+      mockRequest = { userId: '999' };
+      mockUserService.getProfil.mockRejectedValue(new Error('User not found'));
+
+      await userController.getProfil(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      expect(statusSpy).toHaveBeenCalledWith(404);
+      expect(jsonSpy).toHaveBeenCalledWith(expect.objectContaining({
+        success: false,
+        message: 'User not found'
+      }));
+    });
+  });
 });

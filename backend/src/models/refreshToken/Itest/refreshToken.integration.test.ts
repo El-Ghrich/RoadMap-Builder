@@ -6,7 +6,10 @@ import { AppDataSource } from '../../../config/dbConfig';
 describe('RefreshToken Integration Tests', () => {
 
     beforeAll(async () => {
-        await AppDataSource.connect();
+        const dataSource = AppDataSource.getDataSource();
+            if (!dataSource.isInitialized) {
+                await dataSource.initialize();
+            }
     });
 
     afterAll(async () => {
@@ -18,7 +21,7 @@ describe('RefreshToken Integration Tests', () => {
 
     it('should refresh tokens using valid cookie', async () => {
 
-        const signupResponse = await request(app)
+          await request(app)
             .post('/api/auth/signup')
             .send({
                 username: 'refresh_tester',

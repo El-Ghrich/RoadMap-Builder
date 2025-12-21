@@ -22,9 +22,9 @@ describe('Auth Integration Tests', () => {
             username: 'said_test',
             email: 'said@gmail.com',
             password: 'password123',
-            firstName:'said',
-            lastName:'nichan',
-            age:21
+            firstName: 'said',
+            lastName: 'nichan',
+            age: 21
         };
 
         it('should register a new user and return 201', async () => {
@@ -114,6 +114,47 @@ describe('Auth Integration Tests', () => {
                     password: 'any_password'
                 });
 
+            expect(response.status).toBe(401);
+        });
+    });
+
+    describe('GET /api/auth/profil', () => {
+        let authCookie: string;
+
+        beforeEach(async () => {
+            const signupPayload = {
+                username: 'profil_user',
+                email: 'profil@test.com',
+                password: 'password123',
+                firstName: 'Profil',
+                lastName: 'User',
+                age: 25
+            };
+            await request(app).post('/api/auth/signup').send(signupPayload);
+
+            const loginResponse = await request(app)
+                .post('/api/auth/login')
+                .send({
+                    email: signupPayload.email,
+                    password: signupPayload.password
+                });
+
+            authCookie = loginResponse.get('Set-Cookie')!.find(c => c.startsWith('accessToken='))!;
+        });
+
+        it('should return user profile when authenticated', async () => {
+            const response = await request(app)
+                .get('/api/auth/profil')
+                .set('Cookie', [authCookie]);
+
+            expect(response.status).toBe(200);
+            expect(response.body.success).toBe(true);
+            expect(response.body.data.user.username).toBe('profil_user');
+            expect(response.body.data.user).not.toHaveProperty('password');
+        });
+
+        it('should return 401 when not authenticated', async () => {
+            const response = await request(app).get('/api/auth/profil');
             expect(response.status).toBe(401);
         });
     });
