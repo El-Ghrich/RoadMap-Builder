@@ -17,6 +17,7 @@ import { RefreshTokenEntity } from "../refreshToken/refreshToken.entity";
 
 @Entity("users")
 export class UserEntity {
+  
   @PrimaryGeneratedColumn("uuid")
   id!: string;
 

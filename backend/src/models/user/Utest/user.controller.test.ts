@@ -88,6 +88,9 @@ describe('UserController Unit Tests', () => {
   });
 
     describe('login', () => {
+      beforeEach(() => {
+      jest.clearAllMocks(); 
+  });
       it('should set accessToken and refreshToken when rememberMe is true', async () => {
         mockRequest = {
           body: {
@@ -137,7 +140,7 @@ describe('UserController Unit Tests', () => {
         mockUserService.login.mockResolvedValue({
           user: { id: '1', username: 'said' },
           accessToken: 'access_token',
-          refreshToken: 'refresh_token'
+          refreshToken: null
         });
   
         await userController.login(
