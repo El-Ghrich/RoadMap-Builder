@@ -5,8 +5,8 @@ import { AppDataSource } from '../../../config/dbConfig';
 
 describe('Auth Integration Tests', () => {
 
-    beforeAll(async () => {      
-        await AppDataSource.connect();   
+    beforeAll(async () => {
+        await AppDataSource.connect();
     });
 
     afterAll(async () => {
@@ -21,7 +21,10 @@ describe('Auth Integration Tests', () => {
         const signupPayload = {
             username: 'said_test',
             email: 'said@gmail.com',
-            password: 'password123'
+            password: 'password123',
+            firstName: 'said',
+            lastName: 'nichan',
+            age: 21
         };
 
         it('should register a new user and return 201', async () => {
@@ -30,6 +33,7 @@ describe('Auth Integration Tests', () => {
                 .send(signupPayload);
 
             expect(response.status).toBe(201);
+            expect(response.body.success).toBe(true);
             expect(response.body.message).toBe("User created successfully");
             expect(response.body.data.email).toBe(signupPayload.email);
             expect(response.body.data).not.toHaveProperty('password');
@@ -43,6 +47,7 @@ describe('Auth Integration Tests', () => {
                 .send(signupPayload);
 
             expect(response.status).toBe(409);
+            expect(response.body.success).toBe(false);
             expect(response.body.message).toContain('exist');
         });
     });
@@ -64,15 +69,29 @@ describe('Auth Integration Tests', () => {
         it('should login successfully and set secure cookies', async () => {
             const response = await request(app)
                 .post('/api/auth/login')
-                .send(userCredentials);
+                .send({ ...userCredentials, rememberMe: true });
 
             expect(response.status).toBe(200);
-            expect(response.body).toHaveProperty('user');
-            
+            expect(response.body.success).toBe(true);
+            expect(response.body.data).toHaveProperty('email');
+
             const cookies = response.get('Set-Cookie');
             expect(cookies).toBeDefined();
             expect(cookies?.some(c => c.includes('accessToken'))).toBe(true);
             expect(cookies?.some(c => c.includes('refreshToken'))).toBe(true);
+        });
+        it('should login without rememberMe and set only access token cookie', async () => {
+            const response = await request(app)
+                .post('/api/auth/login')
+                .send(userCredentials);
+
+            expect(response.status).toBe(200);
+
+            const cookies = response.get('Set-Cookie');
+            expect(cookies).toBeDefined();
+
+            expect(cookies?.some(c => c.includes('accessToken'))).toBe(true);
+            expect(cookies?.some(c => c.includes('refreshToken'))).toBe(false);
         });
 
         it('should fail with 401 for wrong password', async () => {
@@ -95,6 +114,47 @@ describe('Auth Integration Tests', () => {
                     password: 'any_password'
                 });
 
+            expect(response.status).toBe(401);
+        });
+    });
+
+    describe('GET /api/auth/profil', () => {
+        let authCookie: string;
+
+        beforeEach(async () => {
+            const signupPayload = {
+                username: 'profil_user',
+                email: 'profil@test.com',
+                password: 'password123',
+                firstName: 'Profil',
+                lastName: 'User',
+                age: 25
+            };
+            await request(app).post('/api/auth/signup').send(signupPayload);
+
+            const loginResponse = await request(app)
+                .post('/api/auth/login')
+                .send({
+                    email: signupPayload.email,
+                    password: signupPayload.password
+                });
+
+            authCookie = loginResponse.get('Set-Cookie')!.find(c => c.startsWith('accessToken='))!;
+        });
+
+        it('should return user profile when authenticated', async () => {
+            const response = await request(app)
+                .get('/api/auth/profil')
+                .set('Cookie', [authCookie]);
+
+            expect(response.status).toBe(200);
+            expect(response.body.success).toBe(true);
+            expect(response.body.data.user.username).toBe('profil_user');
+            expect(response.body.data.user).not.toHaveProperty('password');
+        });
+
+        it('should return 401 when not authenticated', async () => {
+            const response = await request(app).get('/api/auth/profil');
             expect(response.status).toBe(401);
         });
     });
