@@ -2,9 +2,9 @@ name: CI - Quality & Tests
 
 on:
   push:
-    branches: [ "main", "develop", "ci-testing" ]
+    branches: [ "main", "dev", "ci-testing" ]
   pull_request:
-    branches: [ "main", "develop", "ci-testing" ]
+    branches: [ "main", "dev", "ci-testing" ]
 
 jobs:
   # ------------------------------------------------------------------
