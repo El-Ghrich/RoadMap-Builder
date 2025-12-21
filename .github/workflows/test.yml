@@ -83,13 +83,14 @@ jobs:
         env:
           # Trigger the Test Configuration in your Factory
           NODE_ENV: test
+          DB_DEV_TYPE: postgres
           DB_TEST_TYPE: postgres
           # Map your specific App variables to the Service Container
-          DB_Test_HOST: localhost
-          DB_Test_PORT: 5432
-          DB_Test_USER: test_user
-          DB_Test_PASSWORD: test_password
-          DB_Test_NAME: roadmap_test_db
+          HOST: localhost
+          DB_PORT: 5432
+          DB_USER: test_user
+          DB_PASSWORD: test_password
+          DB_NAME: roadmap_test_db
           JWT_ACCESS_SECRET: super_secret_test_access
           JWT_REFRESH_SECRET: super_secret_test_refresh
         run: npm run test

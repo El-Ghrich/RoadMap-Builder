@@ -5,7 +5,7 @@ import dotenv from 'dotenv'
 dotenv.config();
 
 console.log('Mot de passe depuis .env:', process.env.DB_PASSWORD);
-console.log('Mot de passe depuis .env:', process.env.DB_USER);
+console.log('utilisateur depuis .env:', process.env.DB_USER);
 
 const appDataSource = new DataSource({
     type:"postgres",
