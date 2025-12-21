@@ -22,4 +22,10 @@ export class RefreshTokenRepository  implements IRefreshTokenRepository{
   async save(token: RefreshTokenEntity): Promise<RefreshTokenEntity> {
     return await this.repo.save(token);
   }
+  async revokeAllByUserId(userId: string) {
+  await this.repo.update(
+    { userId },
+    { isRevoked: true }
+  );
+}
 }

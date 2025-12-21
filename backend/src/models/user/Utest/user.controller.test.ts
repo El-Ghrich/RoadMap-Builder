@@ -90,7 +90,7 @@ describe('UserController Unit Tests', () => {
     describe('login', () => {
       beforeEach(() => {
       jest.clearAllMocks(); 
-  });
+      });
       it('should set accessToken and refreshToken when rememberMe is true', async () => {
         mockRequest = {
           body: {
