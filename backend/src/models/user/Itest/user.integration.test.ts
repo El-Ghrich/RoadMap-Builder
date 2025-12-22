@@ -16,7 +16,6 @@ describe('Auth Integration Tests', () => {
         }
     });
 
-
     describe('POST /api/auth/signup', () => {
         const signupPayload = {
             username: 'said_test',
@@ -106,7 +105,7 @@ describe('Auth Integration Tests', () => {
             const response=await request(app)
                             .post('/forgot-password')
                             .send({
-                                email:'Somia@gmail.com'
+                                email:
                         
                             });
             expect(response.status).toBe(200);     
