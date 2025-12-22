@@ -1,10 +1,11 @@
 import request from 'supertest';
 import app from '../../../app';
 import { AppDataSource } from '../../../config/dbConfig';
-
+ let resetToken:any;
+let userId:any;
 
 describe('Auth Integration Tests', () => {
-
+   
     beforeAll(async () => {      
         await AppDataSource.connect();   
     });
@@ -47,8 +48,9 @@ describe('Auth Integration Tests', () => {
     });
 
     describe('POST /api/auth/login', () => {
+         
         const userCredentials = {
-            email: 'login@test.com',
+            email: 'said@gmail.com',
             password: 'correct_password'
         };
 
@@ -105,11 +107,13 @@ describe('Auth Integration Tests', () => {
             const response=await request(app)
                             .post('/forgot-password')
                             .send({
-                                email:
+                                email:'said@gmail.com'
                         
                             });
             expect(response.status).toBe(200);     
-            expect(response.body.message).toBe('Email sent successfully')                      
+            expect(response.body.message).toBe('Email sent successfully');
+             resetToken= response.body.restToken;
+             userId = response.body.userId;              
         })
    
     // échec, email n’existe pas
@@ -143,13 +147,11 @@ describe('Auth Integration Tests', () => {
 
 describe('/reset-password/:id/:token',()=>{
     it('should reset password successfully',async()=>{
-        const id='id123';
-        const token='ValideToken';//je dois le changer par token valide
-        const newPassword='Password1234'
+        
      const response= await request(app)
-                    .post(`/reset-password/${id}/${token}`)
+                    .post(`/reset-password/${userId }/${resetToken }`)
                     .send({
-                        password:newPassword
+                        password:'Password1234'
                     
                     });
          expect(response.status).toBe(200);

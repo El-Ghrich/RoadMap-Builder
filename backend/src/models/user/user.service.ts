@@ -7,6 +7,7 @@ import { UserEntity } from './user.entity';
 import { Request, Response } from "express";
 import nodemailer from "nodemailer"
 import { error } from "console";
+import { AnyAaaaRecord } from "dns";
 
 
 export class UserService {
@@ -70,6 +71,8 @@ export class UserService {
     const secret=process.env.JWT_ACCESS_SECRET + user.password;
     const token=this.generateToken(user,'10m',secret);
     const link=`http://localhost:3000/reset-pasword/${user.id}/${token}`;
+    const isTest:any=process.env.NODE_ENV==='test' ;
+    if(!isTest){
     const transport=nodemailer.createTransport({
       service:"Gmail",
       auth:{
@@ -87,7 +90,7 @@ export class UserService {
              </div>`
     }
      //send Email with transport
-     transport.sendMail(mailOptions,function(error,success){
+     transport.sendMail(mailOptions,function(error:any,success:any){
       if(error){
         console.log(error);
 
@@ -95,7 +98,11 @@ export class UserService {
         console.log("Email sent successfully"+success.response)
       }
      })
-     return{message:"Email sent successfully"}
+    }
+     return{message:"Email sent successfully",
+      restToken: isTest ? token: undefined,
+      UserId:isTest ? user.id: undefined
+     }
    }
   }
 
