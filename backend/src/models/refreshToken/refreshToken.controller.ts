@@ -6,6 +6,7 @@ export class RefreshTokenController {
 
 
   async refresh(req: Request, res: Response) {
+    console.log("Cookies reçus :", req.cookies);
     const incomingToken = req.cookies.refreshToken;
 
     if (!incomingToken) {
@@ -20,7 +21,7 @@ export class RefreshTokenController {
       httpOnly: true,  
       secure: process.env.NODE_ENV === "production", 
       sameSite: "strict", 
-      maxAge: 7 * 24 * 60 * 60 * 1000, 
+      maxAge: 2 * 60 * 1000, 
       path: "/" 
       });
 
@@ -29,7 +30,7 @@ export class RefreshTokenController {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 15 * 60 * 1000,
+      maxAge: 10 * 1000,
       path: "/"
       });
        return res.status(200).json({ message: "Refresh réussi" });

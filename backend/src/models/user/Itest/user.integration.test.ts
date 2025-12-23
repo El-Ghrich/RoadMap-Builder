@@ -63,8 +63,10 @@ describe('Auth Integration Tests', () => {
             await request(app).post('/api/auth/signup').send({
                 username: 'login_user',
                 email: userCredentials.email,
-                password: userCredentials.password
-            });
+                password: userCredentials.password,
+                        firstName: 'said',
+            lastName: 'nichan',
+            age: 21            });
         });
 
         it('should login successfully and set secure cookies', async () => {
@@ -165,7 +167,7 @@ describe('Auth Integration Tests', () => {
     describe('/forgot-password',()=>{
         it('should send an email and return success message if email exists',async()=>{
             const response=await request(app)
-                            .post('/forgot-password')
+                            .post('/api/auth/forgot-password')
                             .send({
                                 email:'said@gmail.com'
                         
@@ -180,7 +182,7 @@ describe('Auth Integration Tests', () => {
 
         it('should return 404 if email does not exist',async()=>{
             const response=await request(app)
-                            .post('/forgot-password')
+                            .post('/api/auth/forgot-password')
                             .send({
                                 email:'emailfail@gmail.com'
                         
@@ -194,7 +196,7 @@ describe('Auth Integration Tests', () => {
    
         it('should return 400 if email is empty',async()=>{
             const response=await request(app)
-                            .post('/forgot-password')
+                            .post('/api/auth/forgot-password')
                             .send({
                                 email:''
                         
@@ -209,7 +211,7 @@ describe('/reset-password/:id/:token',()=>{
     it('should reset password successfully',async()=>{
         
      const response= await request(app)
-                    .post(`/reset-password/${userId }/${resetToken }`)
+                    .post(`/api/auth/reset-password/${userId }/${resetToken }`)
                     .send({
                         password:'Password1234'
                     
@@ -223,7 +225,7 @@ describe('/reset-password/:id/:token',()=>{
         const token='ValideToken';//je dois le changer par token valide
         const newPassword='Password1234 '
      const response= await request(app)
-                    .post(`/reset-password/${id}/${token}`)
+                    .post(`/api/auth/reset-password/${id}/${token}`)
                     .send({
                         password:newPassword
                     
@@ -237,7 +239,7 @@ describe('/reset-password/:id/:token',()=>{
         const token='InValideToken';//je dois le changer par token Invalide
         const newPassword='Password1234'
      const response= await request(app)
-                    .post(`/reset-password/${id}/${token}`)
+                    .post(`/api/auth/reset-password/${id}/${token}`)
                     .send({
                         password:newPassword
                     
@@ -251,7 +253,7 @@ describe('/reset-password/:id/:token',()=>{
         const token='InValideToken';//je dois le changer par token Invalide
         const newPassword=''
      const response= await request(app)
-                    .post(`/reset-password/${id}/${token}`)
+                    .post(`/api/auth/reset-password/${id}/${token}`)
                     .send({
                         password:newPassword
                     
@@ -263,7 +265,7 @@ describe('/reset-password/:id/:token',()=>{
 
 describe('/logout',()=>{
     it('should clear cookies and return 200 with success message',async()=>{
-        const response=await request(app).get('/logout').send();
+        const response=await request(app).get('/api/auth/logout').send();
         expect(response.status).toBe(200);
         expect(response.body.message).toBe('Logout successful');
         const Cookies=response.headers['set-cookie']as any;
