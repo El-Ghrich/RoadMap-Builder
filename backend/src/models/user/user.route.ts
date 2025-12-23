@@ -12,3 +12,8 @@ userRouter.post('/signup', validationMiddleware(UserRequestDto), (req:Request,re
 userRouter.post('/login', validationMiddleware(LoginRequestDto), (req:Request,res:Response)=> userController.login(req,res));
 
 userRouter.get('/profil',checkAuth,(req:Request,res:Response) => userController.getProfil(req,res));
+userRouter.post('/forgot-password',userController.forgotPassword.bind(userController));
+userRouter.post('/reset-password/:id/:token',userController.resetPassword.bind(userController));
+userRouter.use(checkAuth);
+
+userRouter.get("/logout" , userController.logout.bind(userController));

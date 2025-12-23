@@ -12,7 +12,7 @@ export const testDataSource = new DataSource({
     database: process.env.DB_TEST_NAME,
     synchronize: true,
     dropSchema: true,
-    logging: true,
+    logging: false,
     entities: [UserEntity, RefreshTokenEntity],
 });
 

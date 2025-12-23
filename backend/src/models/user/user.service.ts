@@ -3,6 +3,13 @@ import { IUserRepository } from "./interface/user.interface";
 import { hashPassword, MatchingPassword } from "../../utils/HashPassword";
 import { LoginRequestDto, UserProfilResponse, UserRequestDto, UserResponseDto } from "./user.dto";
 import { RefreshTokenService } from "../refreshToken/refreshToken.service";
+import jwt from 'jsonwebtoken';
+import { UserEntity } from './user.entity';
+import { Request, Response } from "express";
+import nodemailer from "nodemailer"
+import { error } from "console";
+import { AnyAaaaRecord } from "dns";
+
 
 export class UserService {
     constructor(private userRepo:IUserRepository,
@@ -70,5 +77,90 @@ export class UserService {
             user:UserProfilResponse.fromEntity(user)
            }
     }
+
+
+  async forgotPassword(email:string){
+    if(!email){
+      throw new Error('Email is required');
+ 
+    }
+   
+    const user=await this.userRepo.findByEmail(email);
+
+   if(!user){
+   throw new Error('User with this email does not exist');
+   
+   }else{
+    const secret=process.env.JWT_ACCESS_SECRET + user.password;
+    const token=this.tokenService.createAccessTokenOnly(user);
+    const link=`http://localhost:3000/reset-pasword/${user.id}/${token}`;
+    const isTest:any=process.env.NODE_ENV==='test' ;
+    if(!isTest){
+    const transport=nodemailer.createTransport({
+      service:"Gmail",
+      auth:{
+        user:process.env.Email_User,
+        pass:process.env.Email_Password
+      }
+    })
+    const mailOptions={
+        from:process.env.Email_User,
+        to:user.email,
+        subject:"Reset Password ",
+        html:`<div>
+             <h4>Click on the link below to reset your passord</h4>
+             <a href=${link}>${link}</a>
+             </div>`
+    }
+     //send Email with transport
+     transport.sendMail(mailOptions,function(error:any,success:any){
+      if(error){
+        console.log(error);
+
+      }else{
+        console.log("Email sent successfully"+success.response)
+      }
+     })
+    }
+     return{message:"Email sent successfully",
+      restToken: isTest ? token: undefined,
+      UserId:isTest ? user.id: undefined
+     }
+   }
+  }
+
+  async resetPassword( token:string,id:string,newPassword:string ){
+    if(!token && !id && !newPassword){
+      throw new Error('All fields are required')
+    }
+    if(!newPassword){
+    throw new Error('newPassword is required');
+    }
+     if(!id){
+       throw new Error('id is required');
+    }
+   
+    if(!token){
+       throw new Error("Token is required");
+    }
+     const user=await this.userRepo.findById(id);
+    if(!user){
+       throw new Error('User does not exist');
+    }
+    const secret=process.env.JWT_ACCESS_SECRET + user.password;
+    try{
+        jwt.verify(token,secret);
+    }catch{
+    throw new Error("Invalid or expired token");
+  }
+    user.password=await hashPassword(newPassword);
+  
+    await this.userRepo.save(user);
+    return {
+      message:"Password change succsefull"
+    }
+  
+ 
+  }
 
 }

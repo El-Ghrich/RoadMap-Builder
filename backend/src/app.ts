@@ -11,7 +11,9 @@ const app = express();
 app.set('json spaces', 2);
 app.use(cookieParser());
 app.use(express.json());
+app.use(cookieParser())
 app.use(cors());
 
 app.use('/api',AllRoutes);
+
 export default app;

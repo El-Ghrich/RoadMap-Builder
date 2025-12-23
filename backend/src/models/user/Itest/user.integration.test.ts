@@ -1,12 +1,13 @@
 import request from 'supertest';
 import app from '../../../app';
 import { AppDataSource } from '../../../config/dbConfig';
-
+ let resetToken:any;
+let userId:any;
 
 describe('Auth Integration Tests', () => {
-
-    beforeAll(async () => {
-        await AppDataSource.connect();
+   
+    beforeAll(async () => {      
+        await AppDataSource.connect();   
     });
 
     afterAll(async () => {
@@ -15,7 +16,6 @@ describe('Auth Integration Tests', () => {
             await dataSource.destroy();
         }
     });
-
 
     describe('POST /api/auth/signup', () => {
         const signupPayload = {
@@ -53,8 +53,9 @@ describe('Auth Integration Tests', () => {
     });
 
     describe('POST /api/auth/login', () => {
+         
         const userCredentials = {
-            email: 'login@test.com',
+            email: 'said@gmail.com',
             password: 'correct_password'
         };
 
@@ -159,3 +160,119 @@ describe('Auth Integration Tests', () => {
         });
     });
 });
+  //add this data in DB
+  //Succès – email existe en base
+    describe('/forgot-password',()=>{
+        it('should send an email and return success message if email exists',async()=>{
+            const response=await request(app)
+                            .post('/forgot-password')
+                            .send({
+                                email:'said@gmail.com'
+                        
+                            });
+            expect(response.status).toBe(200);     
+            expect(response.body.message).toBe('Email sent successfully');
+             resetToken= response.body.restToken;
+             userId = response.body.userId;              
+        })
+   
+    // échec, email n’existe pas
+
+        it('should return 404 if email does not exist',async()=>{
+            const response=await request(app)
+                            .post('/forgot-password')
+                            .send({
+                                email:'emailfail@gmail.com'
+                        
+                            });
+            expect(response.status).toBe(404);     
+            expect(response.body.message).toBe('User with this email does not exist')                      
+        });
+  
+
+    //Échec – email manquant
+   
+        it('should return 400 if email is empty',async()=>{
+            const response=await request(app)
+                            .post('/forgot-password')
+                            .send({
+                                email:''
+                        
+                            });
+            expect(response.status).toBe(400);     
+        });
+    
+});
+
+
+describe('/reset-password/:id/:token',()=>{
+    it('should reset password successfully',async()=>{
+        
+     const response= await request(app)
+                    .post(`/reset-password/${userId }/${resetToken }`)
+                    .send({
+                        password:'Password1234'
+                    
+                    });
+         expect(response.status).toBe(200);
+         expect(response.body.message).toBe('Password change succsefull')           
+    });
+
+    it('should return 404 if user does not exist',async()=>{
+        const id='id123';//id n'existe pas au base de donne
+        const token='ValideToken';//je dois le changer par token valide
+        const newPassword='Password1234 '
+     const response= await request(app)
+                    .post(`/reset-password/${id}/${token}`)
+                    .send({
+                        password:newPassword
+                    
+                    });
+         expect(response.status).toBe(404);
+         expect(response.body.message).toBe('User does not exist');         
+    });
+
+     it('should return 400 for invalid or expired token',async()=>{
+        const id='id123';
+        const token='InValideToken';//je dois le changer par token Invalide
+        const newPassword='Password1234'
+     const response= await request(app)
+                    .post(`/reset-password/${id}/${token}`)
+                    .send({
+                        password:newPassword
+                    
+                    });
+         expect(response.status).toBe(400);
+         expect(response.body.message).toBe('Invalid or expired token');         
+    });
+
+    it('should return 400 if newPassword is missing',async()=>{
+        const id='id123';
+        const token='InValideToken';//je dois le changer par token Invalide
+        const newPassword=''
+     const response= await request(app)
+                    .post(`/reset-password/${id}/${token}`)
+                    .send({
+                        password:newPassword
+                    
+                    });
+         expect(response.status).toBe(400);
+         expect(response.body.message).toBe('newPassword is required');         
+    });
+});
+
+describe('/logout',()=>{
+    it('should clear cookies and return 200 with success message',async()=>{
+        const response=await request(app).get('/logout').send();
+        expect(response.status).toBe(200);
+        expect(response.body.message).toBe('Logout successful');
+        const Cookies=response.headers['set-cookie']as any;
+        expect(Cookies).toBeDefined();
+        expect(Array.isArray(Cookies)).toBe(true);
+
+        expect(Cookies.some((cookie: string)=>cookie.includes('accessToken=;'))).toBe(true);
+        expect(Cookies.some((cookie:string)=>cookie.includes('refreshToken=;'))).toBe(true);
+
+                                        
+    })
+})
