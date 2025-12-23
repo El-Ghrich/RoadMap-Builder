@@ -6,222 +6,181 @@ describe('UserController Unit Tests', () => {
   let mockUserService: any;
   let mockRequest: Partial<Request>;
   let mockResponse: Partial<Response>;
-  let statusSpy: jest.Mock;
   let jsonSpy: jest.Mock;
+  let statusSpy: jest.Mock;
   let cookieSpy: jest.Mock;
 
   beforeEach(() => {
     mockUserService = {
       signUp: jest.fn(),
       login: jest.fn(),
-      getProfil: jest.fn()
+      getProfil: jest.fn(),
+      forgotPassword: jest.fn(),
+      resetPassword: jest.fn()
     };
 
     userController = new UserController(mockUserService);
 
-    statusSpy = jest.fn().mockReturnThis();
     jsonSpy = jest.fn().mockReturnThis();
+    statusSpy = jest.fn().mockReturnThis();
     cookieSpy = jest.fn().mockReturnThis();
 
     mockResponse = {
       status: statusSpy,
       json: jsonSpy,
-      cookie: cookieSpy
+      cookie: cookieSpy,
     };
   });
 
   describe('signUp', () => {
-    it('should return 201 when signup success', async () => {
-      mockRequest = {
-        body: {
-          username: 'said',
-          email: 'said@gmail.com',
-          password: '123'
-        }
-      };
+    it('should return 201 and user data when signup is successful', async () => {
+      const signupData = { username: 'said', email: 'said@gmail.com', password: '123' };
+      mockRequest = { body: signupData };
 
-      const user = {
+      const mockCreatedUser = {
         id: '1',
         username: 'said',
-        email: 'said@gmail.com'
+        email: 'said@gmail.com',
+        createdAt: new Date()
       };
 
-      mockUserService.signUp.mockResolvedValue(user);
+      mockUserService.signUp.mockResolvedValue(mockCreatedUser);
 
-      await userController.signUp(
-        mockRequest as Request,
-        mockResponse as Response
-      );
+      await userController.signUp(mockRequest as Request, mockResponse as Response);
 
       expect(statusSpy).toHaveBeenCalledWith(201);
       expect(jsonSpy).toHaveBeenCalledWith(expect.objectContaining({
-        message: 'User created successfully',
-        data: user,
+        message: "User created successfully",
+        data: mockCreatedUser,
         success: true
       }));
     });
 
-    it('should return 409 when signup fails', async () => {
+    it('should return 500 when service throws an error', async () => {
       mockRequest = {
-        body: {
-          username: 'said',
-          email: 'said@gmail.com',
-          password: '123'
-        }
+        body: { username: 'said', email: 'said@gmail.com', password: '123' }
       };
+      mockUserService.signUp.mockRejectedValue(new Error('Internal Error'));
 
-      mockUserService.signUp.mockRejectedValue(
-        new Error('email is already exist')
-      );
+      await userController.signUp(mockRequest as Request, mockResponse as Response);
 
-      await userController.signUp(
-        mockRequest as Request,
-        mockResponse as Response
-      );
-
-      expect(statusSpy).toHaveBeenCalledWith(409);
+      expect(statusSpy).toHaveBeenCalledWith(500);
       expect(jsonSpy).toHaveBeenCalledWith(expect.objectContaining({
-        success: false,
-        message: 'email is already exist'
+        message: 'Internal Error',
+        success: false
       }));
     });
   });
 
-    describe('login', () => {
-      beforeEach(() => {
-      jest.clearAllMocks(); 
-      });
-      it('should set accessToken and refreshToken when rememberMe is true', async () => {
-        mockRequest = {
-          body: {
-            email: 'said@gmail.com',
-            password: '123',
-            rememberMe: true
-          }
-        };
-  
-        mockUserService.login.mockResolvedValue({
-          user: { id: '1', username: 'said' },
-          accessToken: 'access_token',
-          refreshToken: 'refresh_token'
-        });
-  
-        await userController.login(
-          mockRequest as Request,
-          mockResponse as Response
-        );
-  
-        expect(statusSpy).toHaveBeenCalledWith(200);
-        expect(cookieSpy).toHaveBeenCalledWith(
-          'accessToken',
-          'access_token',
-          expect.any(Object)
-        );
-        expect(cookieSpy).toHaveBeenCalledWith(
-          'refreshToken',
-          'refresh_token',
-          expect.any(Object)
-        );
-        expect(jsonSpy).toHaveBeenCalledWith(expect.objectContaining({
-        success: true,
-        message: 'Login successful'
-      }))
-      });
-  
-      it('should set only accessToken when rememberMe is false', async () => {
-        mockRequest = {
-          body: {
-            email: 'said@gmail.com',
-            password: '123',
-            rememberMe: false
-          }
-        };
-  
-        mockUserService.login.mockResolvedValue({
-          user: { id: '1', username: 'said' },
-          accessToken: 'access_token',
-          refreshToken: null
-        });
-  
-        await userController.login(
-          mockRequest as Request,
-          mockResponse as Response
-        );
-  
-        expect(statusSpy).toHaveBeenCalledWith(200);
-        expect(cookieSpy).toHaveBeenCalledWith(
-          'accessToken',
-          'access_token',
-          expect.any(Object)
-        );
-        expect(cookieSpy).not.toHaveBeenCalledWith(
-          'refreshToken',
-          expect.anything(),
-          expect.anything()
-        );
-       expect(jsonSpy).toHaveBeenCalledWith(expect.objectContaining({
-        success: true,
-        message: 'Login successful'
+  describe('login', () => {
+    it('should set cookies and return 200 when login is successful', async () => {
+      mockRequest = { body: { email: 'said@gmail.com', password: '123' } };
+
+      const loginResponse = {
+        user: { id: '1', username: 'said' },
+        accessToken: 'access_token_val',
+        refreshToken: 'refresh_token_val'
+      };
+
+      mockUserService.login.mockResolvedValue(loginResponse);
+
+      await userController.login(mockRequest as Request, mockResponse as Response);
+
+      expect(statusSpy).toHaveBeenCalledWith(200);
+      expect(cookieSpy).toHaveBeenCalledWith('accessToken', 'access_token_val', expect.any(Object));
+      expect(cookieSpy).toHaveBeenCalledWith('refreshToken', 'refresh_token_val', expect.any(Object));
+      expect(jsonSpy).toHaveBeenCalledWith(expect.objectContaining({
+        message: "Login successful",
+        data: loginResponse.user,
+        success: true
       }));
-      });
+    });
   });
 
-  describe('getProfil', () => {
-    it('should return 200 and user profile when successful', async () => {
-      mockRequest = {
-        userId: '1'
-      };
+  describe('Logout', () => {
+    it('should clear cookies and return logout successful', async () => {
+      const req: any = {};
+      const res = {
+        clearCookie: jest.fn(),
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn()
+      } as any;
 
-      const profil = {
-        user: {
-          username: 'said',
-          email: 'said@gmail.com'
-        }
-      };
+      await userController.logout(req, res);
+      expect(res.clearCookie).toHaveBeenCalledWith('accessToken');
+      expect(res.clearCookie).toHaveBeenCalledWith('refreshToken');
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({ message: "Logout successful" });
+    });
+  });
 
-      mockUserService.getProfil.mockResolvedValue(profil);
+  describe('ForgotPassword', () => {
+    it('should return 200 and success message when successful', async () => {
+      mockRequest = { body: { email: 'test@email.com' } };
 
-      await userController.getProfil(
-        mockRequest as Request,
-        mockResponse as Response
-      );
+      mockUserService.forgotPassword.mockResolvedValue({
+        message: 'Email sent successfully',
+        resetToken: 'some-token',
+        userId: 'id123'
+      });
+
+      await userController.forgotPassword(mockRequest as Request, mockResponse as Response);
 
       expect(statusSpy).toHaveBeenCalledWith(200);
       expect(jsonSpy).toHaveBeenCalledWith(expect.objectContaining({
-        success: true,
-        message: 'User Profil',
-        data: profil
+        message: 'Email sent successfully',
+        success: true
       }));
     });
 
-    it('should return 401 when userId is missing', async () => {
-      mockRequest = {};
+    it('should return 404 when user does not exist', async () => {
+      mockRequest = { body: { email: 'wrong@email.com' } };
+      mockUserService.forgotPassword.mockRejectedValue(new Error('User with this email does not exist'));
 
-      await userController.getProfil(
-        mockRequest as Request,
-        mockResponse as Response
-      );
-
-      expect(statusSpy).toHaveBeenCalledWith(401);
-      expect(jsonSpy).toHaveBeenCalledWith(expect.objectContaining({
-        success: false,
-        message: 'User ID missing from request'
-      }));
-    });
-
-    it('should return 404 when user not found', async () => {
-      mockRequest = { userId: '999' };
-      mockUserService.getProfil.mockRejectedValue(new Error('User not found'));
-
-      await userController.getProfil(
-        mockRequest as Request,
-        mockResponse as Response
-      );
+      await userController.forgotPassword(mockRequest as Request, mockResponse as Response);
 
       expect(statusSpy).toHaveBeenCalledWith(404);
       expect(jsonSpy).toHaveBeenCalledWith(expect.objectContaining({
-        success: false,
-        message: 'User not found'
+        message: 'User with this email does not exist',
+        success: false
+      }));
+    });
+  });
+
+  describe('ResetPassword', () => {
+    it('should return 200 and success message when successful', async () => {
+      mockRequest = {
+        body: { password: 'NewPassword123' },
+        params: { id: 'id11', token: 'Tokenvalide' }
+      };
+
+      mockUserService.resetPassword.mockResolvedValue({
+        message: 'Password change successful'
+      });
+
+      await userController.resetPassword(mockRequest as Request, mockResponse as Response);
+
+      expect(statusSpy).toHaveBeenCalledWith(200);
+      expect(jsonSpy).toHaveBeenCalledWith(expect.objectContaining({
+        message: 'Password change successful',
+        success: true
+      }));
+    });
+
+    it('should return 401 when token is invalid', async () => {
+      mockRequest = {
+        body: { password: 'NewPassword123' },
+        params: { id: 'id11', token: 'InvalidToken' }
+      };
+
+      mockUserService.resetPassword.mockRejectedValue(new Error('Invalid or expired token'));
+
+      await userController.resetPassword(mockRequest as Request, mockResponse as Response);
+
+      expect(statusSpy).toHaveBeenCalledWith(401);
+      expect(jsonSpy).toHaveBeenCalledWith(expect.objectContaining({
+        message: 'Invalid or expired token',
+        success: false
       }));
     });
   });

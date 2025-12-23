@@ -21,8 +21,10 @@ export class PostgresTestConfig implements IDatabaseConfig {
         return testDataSource;
     }
     async connect(): Promise<void> {
-        await testDataSource.initialize();
-        console.log("Database postgres is connected ")
+        if (!testDataSource.isInitialized) {
+            await testDataSource.initialize();
+            console.log("Database postgres is connected ")
+        }
     }
     async disconnect(): Promise<void> {
         await testDataSource.destroy();
