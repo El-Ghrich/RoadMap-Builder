@@ -1,0 +1,104 @@
+.nodeContainer {
+  box-shadow: var(--shadow-lg);
+  border-radius: 0.5rem;
+  background-color: white;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  transition: all 0.2s;
+  min-width: 250px;
+}
+
+.nodeContainer:hover {
+  box-shadow: 0 10px 25px -5px rgba(20, 184, 166, 0.15);
+  transform: translateY(-2px);
+}
+
+.nodeHeader {
+  background: linear-gradient(135deg, var(--primary-50) 0%, var(--accent-50) 100%);
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.nodeTitle {
+  font-weight: 700;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.nodeBody {
+  padding: 1rem;
+}
+
+.nodeDescription {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.75rem;
+  line-height: 1.5;
+}
+
+.nodeTags {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.nodeTag {
+  padding: 0.25rem 0.625rem;
+  background-color: var(--primary-100);
+  color: var(--primary-700);
+  border-radius: 9999px;
+  font-size: 0.625rem;
+  font-weight: 600;
+  border: 1px solid var(--primary-200);
+}
+
+.nodeResources {
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-color);
+  margin-top: 0.75rem;
+}
+
+.nodeResourcesTitle {
+  font-size: 0.625rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+.nodeResourceLink {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--primary-600);
+  text-decoration: none;
+  margin-bottom: 0.25rem;
+  transition: color 0.2s;
+  padding: 0.25rem 0;
+}
+
+.nodeResourceLink:hover {
+  color: var(--primary-700);
+  text-decoration: underline;
+}
+
+.handle {
+  width: 8px;
+  height: 8px;
+  background-color: var(--primary-600);
+  border: 2px solid white;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.handleTop {
+  top: -4px;
+}
+
+.handleBottom {
+  bottom: -4px;
+}
+

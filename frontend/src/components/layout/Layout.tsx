@@ -42,6 +42,11 @@ export default function Layout({ children, hideNav = false }: LayoutProps) {
             <Link to="/" className={isActive("/") ? styles.active : ""}>
               Home
             </Link>
+            {isAuthenticated && (
+              <Link to="/roadmaps" className={isActive("/roadmaps") ? styles.active : ""}>
+                My Roadmaps
+              </Link>
+            )}
             <a href="#about">About</a>
             <a href="#contact">Contact</a>
           </div>
@@ -89,6 +94,11 @@ export default function Layout({ children, hideNav = false }: LayoutProps) {
               <Link to="/" className={styles.mobileMenuLink}>
                 Home
               </Link>
+              {isAuthenticated && (
+                <Link to="/roadmaps" className={styles.mobileMenuLink}>
+                  My Roadmaps
+                </Link>
+              )}
               <a href="#about" className={styles.mobileMenuLink}>
                 About
               </a>

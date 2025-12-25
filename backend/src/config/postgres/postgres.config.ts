@@ -3,6 +3,7 @@ import { IDatabaseConfig } from "../database.interface";
 import { UserEntity } from "../../models/user/user.entity";
 import dotenv from 'dotenv'
 import { RefreshTokenEntity } from "../../models/refreshToken/refreshToken.entity";
+import { RoadmapEntity } from "../../models/roadmap/roadmap.entity";
 dotenv.config();
 
 console.log('Mot de passe depuis .env:', process.env.DB_PASSWORD);
@@ -18,7 +19,7 @@ const appDataSource = new DataSource({
     database:process.env.DB_NAME,
     synchronize:true,
     logging:true,
-    entities:[UserEntity,RefreshTokenEntity],
+    entities:[UserEntity,RefreshTokenEntity,RoadmapEntity],
     subscribers:[],
     migrations:[]
 })

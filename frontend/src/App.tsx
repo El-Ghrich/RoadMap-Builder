@@ -12,6 +12,8 @@ import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
 import Profile from "./pages/profile/Profile";
 import EditProfile from "./pages/editProfile/EditProfile";
+import Canvas from "./pages/canva/Canvas";
+import RoadmapList from "./pages/roadmaps/RoadmapList";
 import ResetPassword from "./pages/auth/ResetPassword";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import NotFound from "./pages/notFound/NotFound";
@@ -43,6 +45,22 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <EditProfile />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/roadmaps"
+                element={
+                  <ProtectedRoute>
+                    <RoadmapList />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/canvas/:id"
+                element={
+                  <ProtectedRoute>
+                    <Canvas />
                   </ProtectedRoute>
                 }
               />

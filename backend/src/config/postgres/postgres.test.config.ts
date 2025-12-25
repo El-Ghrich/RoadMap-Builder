@@ -2,6 +2,7 @@ import { DataSource } from "typeorm";
 import { IDatabaseConfig } from "../database.interface";
 import { UserEntity } from "../../models/user/user.entity";
 import { RefreshTokenEntity } from "../../models/refreshToken/refreshToken.entity";
+import { RoadmapEntity } from "../../models/roadmap/roadmap.entity";
 
 export const testDataSource = new DataSource({
     type: "postgres",
@@ -13,7 +14,7 @@ export const testDataSource = new DataSource({
     synchronize: true,
     dropSchema: true,
     logging: true,
-    entities: [UserEntity, RefreshTokenEntity],
+    entities: [UserEntity, RefreshTokenEntity, RoadmapEntity],
 });
 
 export class PostgresTestConfig implements IDatabaseConfig {

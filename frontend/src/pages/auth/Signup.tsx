@@ -44,7 +44,7 @@ export default function Signup() {
 
     try {
       await signup(formData.name, formData.email, formData.password);
-      navigate("/profile");
+      navigate("/login");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Signup failed. Please try again.");
     }
