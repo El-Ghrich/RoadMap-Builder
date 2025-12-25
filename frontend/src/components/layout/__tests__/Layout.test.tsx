@@ -1,30 +1,39 @@
-import { describe, it, expect, beforeEach, jest } from '@jest/globals';
+import { describe, it, expect, beforeEach, vi, type Mock } from 'vitest';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter, MemoryRouter } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 import Layout from '../Layout';
 import { useAuth } from '../../../context/AuthContext';
+import { act } from 'react'; // Recommended for React 18+ manual rendering
 
-// Mock dependencies
-jest.mock('../../../context/AuthContext');
-jest.mock('../Logo', () => ({
+// 1. Use vi.mock instead of jest.mock
+vi.mock('../../../context/AuthContext');
+vi.mock('../Logo', () => ({
   __esModule: true,
   default: () => <div data-testid="logo">Logo</div>,
 }));
 
-const mockUseAuth = useAuth as jest.MockedFunction<typeof useAuth>;
+// 2. Update type casting to Vitest's Mock type
+const mockUseAuth = useAuth as Mock;
 
 // Helper function to render component
+// Note: React 18 render is async. Wrapped in act() to ensure updates flush.
 const render = (component: React.ReactElement): { container: HTMLElement; unmount: () => void } => {
   const container = document.createElement('div');
   document.body.appendChild(container);
   const root = ReactDOM.createRoot(container);
-  root.render(component);
+  
+  act(() => {
+    root.render(component);
+  });
 
   return {
     container,
     unmount: () => {
-      root.unmount();
+      // Unmount also needs act usually, but often works without for simple cases
+      act(() => {
+        root.unmount();
+      });
       document.body.removeChild(container);
     },
   };
@@ -43,17 +52,20 @@ const renderWithRouter = (
 };
 
 describe('Layout Component', () => {
-  const mockLogout = jest.fn();
+  // 3. Use vi.fn() instead of jest.fn()
+  const mockLogout = vi.fn();
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    // 4. Use vi.clearAllMocks()
+    vi.clearAllMocks();
     document.body.innerHTML = '';
+    
     // Default mock: unauthenticated user
     mockUseAuth.mockReturnValue({
       isAuthenticated: false,
       user: null,
-      login: jest.fn(),
-      signup: jest.fn(),
+      login: vi.fn(),
+      signup: vi.fn(),
       logout: mockLogout,
       isLoading: false,
       error: null,
@@ -152,8 +164,8 @@ describe('Layout Component', () => {
           createdAt: new Date(),
           updatedAt: new Date(),
         },
-        login: jest.fn(),
-        signup: jest.fn(),
+        login: vi.fn(),
+        signup: vi.fn(),
         logout: mockLogout,
         isLoading: false,
         error: null,
@@ -187,8 +199,8 @@ describe('Layout Component', () => {
           createdAt: new Date(),
           updatedAt: new Date(),
         },
-        login: jest.fn(),
-        signup: jest.fn(),
+        login: vi.fn(),
+        signup: vi.fn(),
         logout: mockLogout,
         isLoading: false,
         error: null,
@@ -218,7 +230,7 @@ describe('Layout Component', () => {
         (link) => link.textContent === 'Home'
       );
       expect(homeLink).toBeTruthy();
-      // Check if active class is applied (if the link exists)
+      
       if (homeLink) {
         expect(homeLink.className).toContain('active');
       }
@@ -237,9 +249,9 @@ describe('Layout Component', () => {
         (link) => link.textContent === 'Home'
       );
       expect(homeLink).toBeTruthy();
-      // On login page, home should not be active
+      
       if (homeLink && homeLink.className) {
-        // The active class might not be present, which is correct
+        // Vitest (via Chai) supports boolean assertions
         expect(homeLink.className.includes('active') || !homeLink.className.includes('active')).toBeTruthy();
       }
       unmount();
@@ -270,9 +282,7 @@ describe('Layout Component', () => {
       expect(menuButton).toBeTruthy();
 
       if (menuButton) {
-        // Simulate click
         menuButton.click();
-        // After click, the menu state should change (tested via component behavior)
         expect(menuButton).toBeTruthy();
       }
       unmount();
@@ -295,8 +305,8 @@ describe('Layout Component', () => {
           createdAt: new Date(),
           updatedAt: new Date(),
         },
-        login: jest.fn(),
-        signup: jest.fn(),
+        login: vi.fn(),
+        signup: vi.fn(),
         logout: mockLogout,
         isLoading: false,
         error: null,
