@@ -76,7 +76,6 @@ export class LoginRequestDto {
   email!: string;
 
   @IsString()
-  @MinLength(8, { message: "Le mot de passe est trop court" })
   password!: string;
 
   @IsOptional()
