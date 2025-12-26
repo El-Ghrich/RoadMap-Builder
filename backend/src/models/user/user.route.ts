@@ -11,4 +11,6 @@ userRouter.post('/signup', validationMiddleware(UserRequestDto), (req:Request,re
 
 userRouter.post('/login', validationMiddleware(LoginRequestDto), (req:Request,res:Response)=> userController.login(req,res));
 
+userRouter.post('/logout', checkAuth, (req:Request,res:Response) => userController.logout(req,res));
+
 userRouter.get('/profil',checkAuth,(req:Request,res:Response) => userController.getProfil(req,res));

@@ -150,18 +150,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     try {
-      // Optionally call a logout endpoint if backend has one
-      // For now, just clear local state
-      // Backend cookies will be cleared by browser when they expire
+      // Call logout endpoint to clear cookies on backend
       await api.post("/auth/logout").catch(() => {
         // Ignore errors if logout endpoint doesn't exist
       });
     } catch {
       // Ignore errors
     } finally {
+      // Clear local state
       setUser(null);
       setIsAuthenticated(false);
       setError(null);
+      // Force a page reload to ensure cookies are cleared and auth state is reset
+      // This ensures that on refresh, the user won't appear as logged in
+      window.location.href = "/";
     }
   };
 

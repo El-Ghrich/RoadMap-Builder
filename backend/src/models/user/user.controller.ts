@@ -94,5 +94,39 @@ export class UserController {
         }
     }
 
+    async logout(req: Request, res: Response): Promise<Response> {
+        try {
+            // Clear cookies
+            res.clearCookie('accessToken', {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'strict',
+                path: '/'
+            });
+            res.clearCookie('refreshToken', {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'strict',
+                path: '/'
+            });
+
+            // Optionally revoke refresh token if userId is available
+            if (req.userId) {
+                await this.userService.revokeRefreshTokens(req.userId as string);
+            }
+
+            return res.status(200).json(
+                ApiResponse.success(null, "Logout successful")
+            );
+        } catch (err: any) {
+            // Even if revoking fails, clear cookies
+            res.clearCookie('accessToken', { path: '/' });
+            res.clearCookie('refreshToken', { path: '/' });
+            return res.status(200).json(
+                ApiResponse.success(null, "Logout successful")
+            );
+        }
+    }
+
 
 }

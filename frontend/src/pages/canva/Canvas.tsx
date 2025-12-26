@@ -15,7 +15,9 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 import Layout from '../../components/layout/Layout';
 import CustomNode from '../../features/roadmap/components/CustomNode';
+import MinimalNode from '../../features/roadmap/components/MinimalNode';
 import NodeEditor from '../../features/roadmap/components/NodeEditor';
+import NodeSidebar from '../../features/roadmap/components/NodeSidebar';
 import { RoadmapApi } from '../../features/roadmap/services/roadmapApi';
 import type { Roadmap, NodeData, RoadmapNode } from '../../features/roadmap/types/roadmap.types';
 import { X, Code2, Plus, Save, ArrowLeft } from 'lucide-react';
@@ -29,7 +31,9 @@ export default function Canvas() {
   const [roadmap, setRoadmap] = useState<Roadmap | null>(null);
   const [showJsonViewer, setShowJsonViewer] = useState(false);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [editingNode, setEditingNode] = useState<Node | null>(null);
+  const [viewingNode, setViewingNode] = useState<Node | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -102,6 +106,7 @@ export default function Canvas() {
   // Register Custom Node Types
   const nodeTypes = useMemo(() => ({
     customNode: CustomNode,
+    minimalNode: MinimalNode,
   }), []);
 
   // Handle edge connections
@@ -121,38 +126,19 @@ export default function Canvas() {
     [setEdges]
   );
 
-  // Handle node click
+  // Handle node click - show sidebar for minimal nodes, editor for full nodes
   const onNodeClick = useCallback((_event: React.MouseEvent, node: Node) => {
-    setEditingNode(node);
-    setIsEditorOpen(true);
-  }, []);
-
-  // Handle pane click to add new node
-  const onPaneClick = useCallback((event: React.MouseEvent) => {
-    if (reactFlowInstance && reactFlowWrapper.current) {
-      const position = reactFlowInstance.screenToFlowPosition({
-        x: event.clientX,
-        y: event.clientY,
-      });
-
-      const newNode: Node = {
-        id: `node_${Date.now()}`,
-        type: 'customNode',
-        position,
-        style: { width: 250 },
-        data: {
-          title: 'New Node',
-          description: '',
-          tags: [],
-          resources: [],
-        },
-      };
-
-      setNodes((nds) => [...nds, newNode]);
-      setEditingNode(newNode);
+    if (node.type === 'minimalNode') {
+      setViewingNode(node);
+      setIsSidebarOpen(true);
+    } else {
+      setEditingNode(node);
       setIsEditorOpen(true);
     }
-  }, [reactFlowInstance, setNodes]);
+  }, []);
+
+  // Handle pane click - removed to prevent accidental node creation
+  // Users can add nodes using the "Add Node" button instead
 
   // Handle node save
   const handleNodeSave = useCallback((data: NodeData) => {
@@ -202,9 +188,9 @@ export default function Canvas() {
 
       const newNode: Node = {
         id: `node_${Date.now()}`,
-        type: 'customNode',
+        type: 'minimalNode', // Default to minimal node
         position,
-        style: { width: 250 },
+        style: { width: 200 },
         data: {
           title: 'New Node',
           description: '',
@@ -349,7 +335,6 @@ export default function Canvas() {
               onEdgesChange={onEdgesChange}
               onConnect={onConnect}
               onNodeClick={onNodeClick}
-              onPaneClick={onPaneClick}
               onEdgeClick={onEdgeClick}
               onInit={setReactFlowInstance}
               nodeTypes={nodeTypes}
@@ -400,6 +385,23 @@ export default function Canvas() {
           }}
           onSave={handleNodeSave}
           onDelete={editingNode ? handleNodeDelete : undefined}
+        />
+
+        {/* Node Sidebar for minimal nodes */}
+        <NodeSidebar
+          nodeData={viewingNode?.data as NodeData | null}
+          isOpen={isSidebarOpen}
+          onClose={() => {
+            setIsSidebarOpen(false);
+            setViewingNode(null);
+          }}
+          onEdit={() => {
+            if (viewingNode) {
+              setEditingNode(viewingNode);
+              setIsSidebarOpen(false);
+              setIsEditorOpen(true);
+            }
+          }}
         />
       </div>
     </Layout>

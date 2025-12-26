@@ -20,6 +20,10 @@ export class CreateRoadmapDto {
   description?: string;
 
   @IsOptional()
+  @IsString()
+  status?: "DRAFT" | "PUBLISHED" | "ARCHIVED";
+
+  @IsOptional()
   @IsObject()
   data?: RoadmapData;
 }
@@ -35,6 +39,10 @@ export class UpdateRoadmapDto {
   description?: string;
 
   @IsOptional()
+  @IsString()
+  status?: "DRAFT" | "PUBLISHED" | "ARCHIVED";
+
+  @IsOptional()
   @IsObject()
   data?: RoadmapData;
 }
@@ -44,6 +52,7 @@ export class RoadmapResponseDto {
   id!: string;
   title!: string;
   description?: string;
+  status?: "DRAFT" | "PUBLISHED" | "ARCHIVED";
   data!: RoadmapData;
   userId!: string;
   createdAt!: Date;
@@ -54,6 +63,7 @@ export class RoadmapResponseDto {
     dto.id = entity.id;
     dto.title = entity.title;
     dto.description = entity.description || undefined;
+    dto.status = entity.status || "DRAFT";
     dto.data = entity.data;
     dto.userId = entity.userId;
     dto.createdAt = entity.createdAt;
@@ -67,6 +77,7 @@ export class RoadmapListItemDto {
   id!: string;
   title!: string;
   description?: string;
+  status?: "DRAFT" | "PUBLISHED" | "ARCHIVED";
   userId!: string;
   createdAt!: Date;
   updatedAt!: Date;
@@ -78,6 +89,7 @@ export class RoadmapListItemDto {
     dto.id = entity.id;
     dto.title = entity.title;
     dto.description = entity.description || undefined;
+    dto.status = entity.status || "DRAFT";
     dto.userId = entity.userId;
     dto.createdAt = entity.createdAt;
     dto.updatedAt = entity.updatedAt;

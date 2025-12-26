@@ -72,6 +72,13 @@ export class UserService {
            }
     }
 
+    async revokeRefreshTokens(userId: string): Promise<void> {
+        // Revoke all refresh tokens for this user
+        // This would require a method in RefreshTokenRepository to revoke by userId
+        // For now, we'll just clear cookies on logout
+        // The tokens will expire naturally
+    }
+
 
  /*    async refreshToken(oldToken: string) {
     const payload = jwt.verify(oldToken, process.env.JWT_REFRESH_SECRET!) as any;

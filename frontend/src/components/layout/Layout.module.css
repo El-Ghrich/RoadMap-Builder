@@ -147,6 +147,7 @@
   width: 100%;
   position: relative;
   min-height: 0; /* Prevent flex item from overflowing */
+  isolation: isolate; /* Create new stacking context to prevent stacking issues */
 }
 
 /* Footer */

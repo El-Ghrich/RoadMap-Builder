@@ -1,0 +1,55 @@
+.minimalNodeContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background-color: white;
+  border: 2px solid var(--border-color);
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s;
+  min-width: 120px;
+  max-width: 200px;
+}
+
+.minimalNodeContainer:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  border-color: var(--primary-600);
+  transform: translateY(-1px);
+}
+
+.minimalNodeIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-600);
+  flex-shrink: 0;
+}
+
+.minimalNodeTitle {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+}
+
+.handle {
+  width: 8px;
+  height: 8px;
+  background-color: var(--primary-600);
+  border: 2px solid white;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.handleTop {
+  top: -4px;
+}
+
+.handleBottom {
+  bottom: -4px;
+}
+

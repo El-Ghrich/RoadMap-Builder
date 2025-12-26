@@ -13,6 +13,8 @@ export interface RoadmapNode {
   data: NodeData;
 }
 
+export type RoadmapStatus = "DRAFT" | "PUBLISHED" | "ARCHIVED";
+
 export interface RoadmapEdge {
   id: string;
   source: string;
@@ -38,6 +40,7 @@ export interface Roadmap {
   id: string;
   title: string;
   description?: string;
+  status?: RoadmapStatus;
   data: RoadmapData;
   createdAt: Date;
   updatedAt: Date;

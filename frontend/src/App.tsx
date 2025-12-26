@@ -6,6 +6,8 @@ import { TooltipProvider } from "./components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
+// Initialize API interceptors
+import "./services/http/index";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Index from "./pages/index/Index";
 import Login from "./pages/auth/Login";
@@ -16,6 +18,8 @@ import Canvas from "./pages/canva/Canvas";
 import RoadmapList from "./pages/roadmaps/RoadmapList";
 import ResetPassword from "./pages/auth/ResetPassword";
 import ForgotPassword from "./pages/auth/ForgotPassword";
+import About from "./pages/about/About";
+import Contact from "./pages/contact/Contact";
 import NotFound from "./pages/notFound/NotFound";
 
 const queryClient = new QueryClient();
@@ -66,6 +70,8 @@ function App() {
               />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

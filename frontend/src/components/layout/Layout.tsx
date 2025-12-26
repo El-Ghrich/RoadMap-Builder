@@ -47,8 +47,12 @@ export default function Layout({ children, hideNav = false }: LayoutProps) {
                 My Roadmaps
               </Link>
             )}
-            <a href="#about">About</a>
-            <a href="#contact">Contact</a>
+            <Link to="/about" className={isActive("/about") ? styles.active : ""}>
+              About
+            </Link>
+            <Link to="/contact" className={isActive("/contact") ? styles.active : ""}>
+              Contact
+            </Link>
           </div>
 
           {/* Desktop Auth Buttons */}
@@ -99,12 +103,12 @@ export default function Layout({ children, hideNav = false }: LayoutProps) {
                   My Roadmaps
                 </Link>
               )}
-              <a href="#about" className={styles.mobileMenuLink}>
+              <Link to="/about" className={styles.mobileMenuLink}>
                 About
-              </a>
-              <a href="#contact" className={styles.mobileMenuLink}>
+              </Link>
+              <Link to="/contact" className={styles.mobileMenuLink}>
                 Contact
-              </a>
+              </Link>
               <div style={{ paddingTop: "0.75rem", borderTop: "1px solid var(--border-color)", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                 {isAuthenticated ? (
                   <>
