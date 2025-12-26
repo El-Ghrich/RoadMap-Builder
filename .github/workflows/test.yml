@@ -180,24 +180,36 @@ jobs:
           JWT_REFRESH_SECRET: super_secret_test_refresh
           PORT: 3000
         run: |
-          npm run dev &
+          nohup npm run dev > backend.log 2>&1 &
+          echo $! > backend.pid
           echo "Backend starting on port 3000..."
+          sleep 5
 
       # Start Frontend in Background
       - name: Start Frontend Server
         working-directory: ./frontend
         env:
-          VITE_API_URL: http://127.0.0.1:3000/api
+          VITE_API_URL: http://localhost:3000/api
         run: |
-          npm run dev &
+          nohup npm run dev -- --host > frontend.log 2>&1 &
+          echo $! > frontend.pid
           echo "Frontend starting on port 5173..."
+          sleep 5
 
       # Wait for servers to be ready
       - name: Wait for Servers
-        working-directory: ./e2e
         run: |
-          npx wait-on http://127.0.0.1:3000 http://127.0.0.1:5173 -t 120000
+          npx wait-on tcp:3000 tcp:5173 -t 180000 --interval 2000 --verbose || {
+            echo "Servers failed to start. Checking logs..."
+            echo "=== Backend Log ==="
+            cat backend/backend.log || echo "No backend log"
+            echo "=== Frontend Log ==="
+            cat frontend/frontend.log || echo "No frontend log"
+            exit 1
+          }
           echo "Both servers are ready!"
+          echo "Waiting additional 5 seconds for full initialization..."
+          sleep 5
 
       # Run Cypress E2E Tests
       - name: Run Cypress E2E Tests
