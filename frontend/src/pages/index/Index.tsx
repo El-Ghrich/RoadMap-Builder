@@ -1,9 +1,8 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Layout from "../../components/layout/Layout";
 import { ArrowRight, Lightbulb, Users, Zap, Globe, Lock, Share2 } from "lucide-react";
 import styles from "./Index.module.css";
 import { useAuth } from "../../context/AuthContext";
-import { useEffect } from "react";
 
 interface ValueProposition {
   icon: React.ReactNode;
@@ -47,14 +46,7 @@ const valuePropositions: ValueProposition[] = [
 
 
 export default function Index() {
-  const { isAuthenticated } = useAuth();
-  const navigate = useNavigate();
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/roadmaps');
-    }
-  }, [isAuthenticated, navigate]);
 
   return (
     <Layout>

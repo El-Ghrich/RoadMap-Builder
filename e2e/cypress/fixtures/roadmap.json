@@ -1,0 +1,62 @@
+{
+  "basicRoadmap": {
+    "title": "My First Roadmap",
+    "description": "A test roadmap for e2e testing"
+  },
+  "complexRoadmap": {
+    "title": "Full Stack Developer Roadmap",
+    "description": "Complete learning path for full stack development",
+    "nodes": [
+      {
+        "id": "1",
+        "type": "minimalNode",
+        "position": {
+          "x": 250,
+          "y": 100
+        },
+        "data": {
+          "title": "HTML & CSS"
+        }
+      },
+      {
+        "id": "2",
+        "type": "minimalNode",
+        "position": {
+          "x": 250,
+          "y": 200
+        },
+        "data": {
+          "title": "JavaScript"
+        }
+      },
+      {
+        "id": "3",
+        "type": "customNode",
+        "position": {
+          "x": 250,
+          "y": 300
+        },
+        "data": {
+          "title": "React",
+          "description": "Learn React fundamentals",
+          "tags": [
+            "frontend",
+            "library"
+          ]
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e1-2",
+        "source": "1",
+        "target": "2"
+      },
+      {
+        "id": "e2-3",
+        "source": "2",
+        "target": "3"
+      }
+    ]
+  }
+}

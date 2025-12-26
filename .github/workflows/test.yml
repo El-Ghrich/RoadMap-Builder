@@ -98,8 +98,8 @@ jobs:
         run: npm run test
 
 # ------------------------------------------------------------------
-  # JOB 2: FRONTEND UNIT & INTEGRATION TESTS
-  # Spins up a ephemeral Postgres Container
+  # JOB 3: FRONTEND UNIT & INTEGRATION TESTS
+  # Runs frontend tests (no database needed)
   # ------------------------------------------------------------------
   frontend-tests:
     needs: code-quality
@@ -128,7 +128,7 @@ jobs:
         run: npm run test
 
   # ------------------------------------------------------------------
-  # JOB 3: FRONTEND E2E TESTS (Cypress)
+  # JOB 4: FRONTEND E2E TESTS (Cypress)
   # Needs to run the Backend and Frontend together
   # ------------------------------------------------------------------
   cypress-e2e:
@@ -158,35 +158,68 @@ jobs:
           cache: 'npm'
           cache-dependency-path: '**/package-lock.json'
 
-      # Install ALL dependencies
+      # Install ALL dependencies (backend, frontend, and e2e)
       - name: Install Dependencies
         run: |
           cd backend && npm ci
           cd ../frontend && npm ci
+          cd ../e2e && npm ci
 
       # Start Backend in Background
       - name: Start Backend Server
+        working-directory: ./backend
         env:
-          DB_HOST: localhost
-          DB_PORT: 5432
-          DB_USERNAME: test_user
-          DB_PASSWORD: test_password
-          DB_DATABASE: roadmap_test_db
+          NODE_ENV: test
+          DB_TEST_TYPE: postgres
+          DB_TEST_HOST: localhost
+          DB_TEST_PORT: 5432
+          DB_TEST_USER: test_user
+          DB_TEST_PASSWORD: test_password
+          DB_TEST_NAME: roadmap_test_db
+          JWT_ACCESS_SECRET: super_secret_test_access
+          JWT_REFRESH_SECRET: super_secret_test_refresh
           PORT: 3000
         run: |
-          cd backend
           npm run dev &
           echo "Backend starting on port 3000..."
 
-      # Run Cypress
-      # This action handles caching Cypress binary and running the tests
-      - name: Cypress Run
-        uses: cypress-io/github-action@v6
-        with:
-          working-directory: ./frontend
-          start: npm run cypress
-          wait-on: 'http://localhost:5173, http://localhost:3000' # Waits for React AND Express
-          wait-on-timeout: 120
+      # Start Frontend in Background
+      - name: Start Frontend Server
+        working-directory: ./frontend
         env:
-          # Inject backend URL to frontend
-          VITE_API_URL: http://localhost:3000
+          VITE_API_URL: http://localhost:3000/api
+        run: |
+          npm run dev &
+          echo "Frontend starting on port 5173..."
+
+      # Wait for servers to be ready
+      - name: Wait for Servers
+        run: |
+          npx wait-on http://localhost:3000 http://localhost:5173 -t 120000
+          echo "Both servers are ready!"
+
+      # Run Cypress E2E Tests
+      - name: Run Cypress E2E Tests
+        working-directory: ./e2e
+        env:
+          CYPRESS_BASE_URL: http://localhost:5173
+          CYPRESS_API_URL: http://localhost:3000/api
+        run: npm test
+
+      # Upload Cypress screenshots on failure
+      - name: Upload Screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-screenshots
+          path: e2e/cypress/screenshots
+          if-no-files-found: ignore
+
+      # Upload Cypress videos
+      - name: Upload Videos
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-videos
+          path: e2e/cypress/videos
+          if-no-files-found: ignore
