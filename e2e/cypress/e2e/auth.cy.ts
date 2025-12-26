@@ -120,14 +120,5 @@ describe('Authentication Flow', () => {
       cy.visit('/roadmaps');
       cy.url().should('include', '/login');
     });
-
-    it('should redirect to roadmaps when logged in user visits home', () => {
-      cy.fixture('user').then((users) => {
-        cy.login(users.validUser.email, users.validUser.password);
-        
-        cy.visit('/');
-        cy.url().should('include', '/roadmaps');
-      });
-    });
   });
 });

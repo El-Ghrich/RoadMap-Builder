@@ -5,12 +5,13 @@ describe('Navigation', () => {
   });
 
   describe('Default Page Redirects', () => {
-    it('should redirect logged-in users from home to roadmaps', () => {
+    it('should allow logged-in users to access home page', () => {
       cy.fixture('user').then((users) => {
         cy.login(users.validUser.email, users.validUser.password);
         
         cy.visit('/');
-        cy.url().should('include', '/roadmaps');
+        // Should stay on home page, not redirect
+        cy.url().should('eq', Cypress.config().baseUrl + '/');
       });
     });
 
@@ -56,7 +57,8 @@ describe('Navigation', () => {
       
       // Click logo or home link
       cy.get('a[href="/"]').first().click();
-      cy.url().should('include', '/roadmaps'); // Should redirect to roadmaps for logged-in users
+      // Should go to home page (logged-in users can access it now)
+      cy.url().should('eq', Cypress.config().baseUrl + '/');
     });
   });
 
