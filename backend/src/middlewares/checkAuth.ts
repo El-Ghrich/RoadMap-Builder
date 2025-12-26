@@ -1,41 +1,23 @@
-import { Request, Response, NextFunction } from "express";
+import {Request,Response,NextFunction} from "express";
 import jwt from "jsonwebtoken";
-
-declare global {
-  namespace Express {
-    interface Request {
-      userId?: string;
+export async function checkAuth(req:Request,res:Response,next:NextFunction){
+    const token=req.cookies.accessToken;
+    if(!token){
+        return  res.status(401).json({
+            message:"Unauthorized:No token found"
+        });
     }
-  }
-}
-
-export async function checkAuth(req: Request, res: Response, next: NextFunction) {
-  try {
-
-    const token = req.cookies?.accessToken;
-
-    if (!token) {
-      return res.status(401).json({
-        message: "Unauthorized: No token found"
-      });
-    }
-
-
-    const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET as string) as any;
-
-    req.userId = decoded.id;
-
-    next();
-  } catch (err: any) {
-    if (err.name === "TokenExpiredError") {
-      return res.status(401).json({
-        message: "Unauthorized: Token expired"
-      });
+    try{
+        const decoded:any=jwt.verify(token,process.env.JWT_ACCESS_SECRET!);
+        req.userId=decoded.id;
+        next()
+    }catch(err:any){
+        if(err.name==="TokenExpiredError"){
+            return res.status(401).json({
+                message:"Unauthorized:Token expired",
+                error: { code: "ACCESS_TOKEN_EXPIRED" }
+            });
+        }
     }
 
-  
-    return res.status(401).json({
-      message: "Unauthorized: Invalid token"
-    });
-  }
 }

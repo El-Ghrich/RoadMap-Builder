@@ -13,7 +13,7 @@ export const testDataSource = new DataSource({
     database: process.env.DB_TEST_NAME,
     synchronize: true,
     dropSchema: true,
-    logging: true,
+    logging: false,
     entities: [UserEntity, RefreshTokenEntity, RoadmapEntity],
 });
 
@@ -22,8 +22,10 @@ export class PostgresTestConfig implements IDatabaseConfig {
         return testDataSource;
     }
     async connect(): Promise<void> {
-        await testDataSource.initialize();
-        console.log("Database postgres is connected ")
+        if (!testDataSource.isInitialized) {
+            await testDataSource.initialize();
+            console.log("Database postgres is connected ")
+        }
     }
     async disconnect(): Promise<void> {
         await testDataSource.destroy();

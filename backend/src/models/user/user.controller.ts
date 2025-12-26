@@ -76,7 +76,7 @@ export class UserController {
         try {
 
             const id = req.userId;
-            
+
             if (!id) {
                 return res.status(401).json(ApiResponse.error("User ID missing from request"));
             }
@@ -94,39 +94,43 @@ export class UserController {
         }
     }
 
-    async logout(req: Request, res: Response): Promise<Response> {
+    async logout(req: Request, res: Response) {
+        res.clearCookie('accessToken');
+        res.clearCookie('refreshToken');
+        return res.status(200).json({
+            message: "Logout successful"
+        });
+
+    }
+    async forgotPassword(req: Request, res: Response) {
         try {
-            // Clear cookies
-            res.clearCookie('accessToken', {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'strict',
-                path: '/'
-            });
-            res.clearCookie('refreshToken', {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'strict',
-                path: '/'
-            });
-
-            // Optionally revoke refresh token if userId is available
-            if (req.userId) {
-                await this.userService.revokeRefreshTokens(req.userId as string);
-            }
-
-            return res.status(200).json(
-                ApiResponse.success(null, "Logout successful")
-            );
+            const email = req.body.email;
+            const result: any = await this.userService.forgotPassword(email);
+            return res.status(200).json(ApiResponse.success(result, result.message));
         } catch (err: any) {
-            // Even if revoking fails, clear cookies
-            res.clearCookie('accessToken', { path: '/' });
-            res.clearCookie('refreshToken', { path: '/' });
-            return res.status(200).json(
-                ApiResponse.success(null, "Logout successful")
-            );
+            let status = 500;
+            if (err.message === 'Email is required') status = 400;
+            if (err.message === 'User with this email does not exist') status = 404;
+
+            return res.status(status).json(ApiResponse.error(err.message || "Internal server error"));
         }
     }
 
+    async resetPassword(req: Request, res: Response) {
+        try {
+            const token = req.params.token;
+            const id = req.params.id;
+            const newPassword = req.body.password;
+            const result: any = await this.userService.resetPassword(token, id, newPassword);
 
-}
+            return res.status(200).json(ApiResponse.success(null, result.message));
+        } catch (err: any) {
+            let status = 400;
+            if (err.message === "User does not exist") status = 404;
+            if (err.message === "Invalid or expired token") status = 401;
+
+            return res.status(status).json(ApiResponse.error(err.message || "Bad request"));
+        }
+    }
+
+}   

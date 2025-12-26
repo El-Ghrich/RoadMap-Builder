@@ -10,12 +10,17 @@ const corsOptions = {
   credentials: true
 }
 
+import helmet from 'helmet';
+import morgan from 'morgan';
 const app = express();
+app.use(helmet());
 
+app.use(morgan('dev'));
 app.set('json spaces', 2);
 app.use(cookieParser());
 app.use(express.json());
 app.use(cors(corsOptions));
 
-app.use('/api',AllRoutes);
+app.use('/api', AllRoutes);
+
 export default app;
