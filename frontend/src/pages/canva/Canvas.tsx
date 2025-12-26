@@ -269,8 +269,8 @@ export default function Canvas() {
   // Handle node click - show sidebar for minimal nodes, editor for full nodes
   const onNodeClick = useCallback((_event: React.MouseEvent, node: Node) => {
     if (node.type === 'minimalNode') {
-      setViewingNode(node);
-      setIsSidebarOpen(true);
+      // Do nothing for minimal nodes, they use the hover toolbar
+      return;
     } else {
       setEditingNode(node);
       setIsEditorOpen(true);

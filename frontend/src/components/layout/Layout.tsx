@@ -59,9 +59,9 @@ export default function Layout({ children, hideNav = false }: LayoutProps) {
           <div className={styles.navAuthButtons}>
             {isAuthenticated ? (
               <>
-                <span style={{ fontSize: "0.875rem", color: "var(--text-secondary)", marginRight: "1rem" }}>
+                <Link to="/profile" style={{ fontSize: "0.875rem", color: "var(--text-secondary)", marginRight: "1rem", textDecoration: "none" }}>
                   {user?.username || user?.email}
-                </span>
+                </Link>
                 <button onClick={handleLogout} className={styles.signInLink} style={{ cursor: "pointer", border: "none", background: "none" }}>
                   Logout
                 </button>
@@ -112,9 +112,9 @@ export default function Layout({ children, hideNav = false }: LayoutProps) {
               <div style={{ paddingTop: "0.75rem", borderTop: "1px solid var(--border-color)", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                 {isAuthenticated ? (
                   <>
-                    <div style={{ fontSize: "0.875rem", color: "var(--text-secondary)", padding: "0.5rem 0" }}>
+                    <Link to="/profile" style={{ fontSize: "0.875rem", color: "var(--text-secondary)", padding: "0.5rem 0", textDecoration: "none", display: "block" }}>
                       {user?.username || user?.email}
-                    </div>
+                    </Link>
                     <button onClick={handleLogout} className={styles.mobileMenuLink} style={{ cursor: "pointer", border: "none", background: "none", textAlign: "left", padding: "0.5rem 0" }}>
                       Logout
                     </button>

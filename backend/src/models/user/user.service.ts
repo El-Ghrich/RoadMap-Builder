@@ -5,12 +5,12 @@ import { LoginRequestDto, UserProfilResponse, UserRequestDto, UserResponseDto } 
 import { RefreshTokenService } from "../refreshToken/refreshToken.service";
 import jwt from 'jsonwebtoken';
 import nodemailer from "nodemailer"
-
-
+import { IRoadmapRepository } from "../roadmap/interface/roadmap.interface";
 
 export class UserService {
   constructor(private userRepo: IUserRepository,
-    private tokenService: RefreshTokenService
+    private tokenService: RefreshTokenService,
+    private roadmapRepo: IRoadmapRepository
   ) { }
 
   async signUp(userdata: UserRequestDto): Promise<UserResponseDto> {
@@ -70,11 +70,12 @@ export class UserService {
       throw new Error("User not found")
     }
 
+    const roadmapCount = await this.roadmapRepo.countByUserId(id);
+
     return {
-      user: UserProfilResponse.fromEntity(user)
+      user: UserProfilResponse.fromEntity(user, { roadmaps: roadmapCount })
     }
   }
-
 
   async forgotPassword(email: string) {
     if (!email) {

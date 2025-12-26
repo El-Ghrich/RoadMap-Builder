@@ -8,5 +8,6 @@ export interface IRoadmapRepository {
   update(id: string, roadmapData: UpdateRoadmapDto): Promise<RoadmapEntity | null>;
   delete(id: string): Promise<boolean>;
   findByIdAndUserId(id: string, userId: string): Promise<RoadmapEntity | null>;
+  countByUserId(userId: string): Promise<number>;
 }
 

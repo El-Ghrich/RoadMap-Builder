@@ -58,5 +58,9 @@ export class RoadmapRepository implements IRoadmapRepository {
     const result = await this.repository.delete(id);
     return (result.affected || 0) > 0;
   }
+
+  async countByUserId(userId: string): Promise<number> {
+    return await this.repository.count({ where: { userId } });
+  }
 }
 

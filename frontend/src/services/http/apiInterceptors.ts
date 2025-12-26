@@ -7,13 +7,15 @@ export const setupInterceptors = () => {
       console.log("start")
       const originalRequest = error.config;
       const code = error.response?.data?.error?.code;
+      const message = error.response?.data?.message;
 
       // Handle 401 errors (unauthorized) - try to refresh token
       if (
         error.response?.status === 401 &&
         !originalRequest._retry &&
         (code === "ACCESS_TOKEN_EXPIRED" || 
-          code === "NO_ACCESS_FOUND" )
+          code === "NO_ACCESS_FOUND" ||
+          message === "Unauthorized: Token expired")
       ) {
         // Skip refresh for login/signup/refresh endpoints to avoid infinite loops
         if (originalRequest.url?.includes("/auth/login") || 

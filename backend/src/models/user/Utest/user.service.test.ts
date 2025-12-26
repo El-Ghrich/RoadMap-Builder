@@ -25,7 +25,11 @@ describe('UserService Unit Tests', () => {
       createAccessTokenOnly: jest.fn().mockReturnValue('access_token')
     };
 
-    userService = new UserService(mockUserRepository, mockTokenService);
+    const mockRoadmapRepository: any = {
+      countByUserId: jest.fn().mockResolvedValue(0)
+    };
+
+    userService = new UserService(mockUserRepository, mockTokenService, mockRoadmapRepository);
     process.env.JWT_ACCESS_SECRET = 'test_access_secret';
     process.env.JWT_REFRESH_SECRET = 'test_refresh_secret';
   });
