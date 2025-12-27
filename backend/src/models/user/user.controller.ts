@@ -92,6 +92,22 @@ export class UserController {
             );
         }
     }
+   
+
+    async EditProfil(req:Request, res:Response){
+        const updates= req.body;
+       const userId:any=req.userId;
+       try{
+        const result:any=await this.userService.EditProfil(updates,userId);
+        return res.status(200).json(ApiResponse.success(result, result.message));
+       }catch(err:any){
+        let status=500;
+        if (err.message === 'user not found') status = 404;
+            return res.status(status).json(ApiResponse.error(err.message || "Internal server error"));
+       }
+
+       
+    }
 
     async logout(req: Request, res: Response) {
         res.clearCookie('accessToken');

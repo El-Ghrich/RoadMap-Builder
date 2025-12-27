@@ -6,6 +6,7 @@ import { RefreshTokenService } from "../refreshToken/refreshToken.service";
 import jwt from 'jsonwebtoken';
 import nodemailer from "nodemailer"
 import { IRoadmapRepository } from "../roadmap/interface/roadmap.interface";
+import { UserEntity } from "./user.entity";
 
 export class UserService {
   constructor(private userRepo: IUserRepository,
@@ -77,6 +78,25 @@ export class UserService {
     }
   }
 
+  async EditProfil(updates:any,userId:string){
+   const user=await this.userRepo.findById(userId);
+   if(!user){
+    throw new Error('user not found');
+   }else{
+    const allowedFields = ["firstName", "lastName", "username", "email", "avatar", "age"];
+    //hasOwnProperty permet de verfier si key est bien existe 
+    for(let key of allowedFields){
+      if(updates.hasOwnProperty(key) && updates[key] !== null){
+       (user as any)[key]= updates[key];
+        await this.userRepo.save(user);
+      }
+      return{
+        message:"Profil change  successfully"
+      }
+    }
+   }
+
+  }
   async forgotPassword(email: string) {
     if (!email) {
       throw new Error('Email is required');
