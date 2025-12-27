@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "lib": ["es5", "dom"],
+    "types": ["cypress", "node"],
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,             // Do not emit .js files; Cypress handles TS compilation on the fly
+    "baseUrl": ".",
+    "paths": {
+      "@pages/*": ["src/pages/*"],      // Optional: Path alias for cleaner imports
+      "@fixtures/*": ["cypress/fixtures/*"]
+    }
+  },
+  "include": [
+    "src/**/*.ts",
+    "cypress/**/*.ts",
+    "cypress.config.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

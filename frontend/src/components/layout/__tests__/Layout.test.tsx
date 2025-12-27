@@ -1,43 +1,64 @@
-import { describe, it, expect, beforeEach, vi, type MockedFunction } from 'vitest';
+import { describe, it, expect, beforeEach, vi, type Mock } from 'vitest';
 import React from 'react';
+import ReactDOM from 'react-dom/client';
 import { MemoryRouter } from 'react-router-dom';
-import { render, cleanup } from '@testing-library/react'; // FIX: Use standard library
 import Layout from '../Layout';
 import { useAuth } from '../../../context/AuthContext';
+import { act } from 'react'; // Recommended for React 18+ manual rendering
 
-// Mock dependencies
+// 1. Use vi.mock instead of jest.mock
 vi.mock('../../../context/AuthContext');
 vi.mock('../Logo', () => ({
   __esModule: true,
   default: () => <div data-testid="logo">Logo</div>,
 }));
 
-const mockUseAuth = useAuth as MockedFunction<typeof useAuth>;
+// 2. Update type casting to Vitest's Mock type
+const mockUseAuth = useAuth as Mock;
+
+// Helper function to render component
+// Note: React 18 render is async. Wrapped in act() to ensure updates flush.
+const render = (component: React.ReactElement): { container: HTMLElement; unmount: () => void } => {
+  const container = document.createElement('div');
+  document.body.appendChild(container);
+  const root = ReactDOM.createRoot(container);
+  
+  act(() => {
+    root.render(component);
+  });
+
+  return {
+    container,
+    unmount: () => {
+      // Unmount also needs act usually, but often works without for simple cases
+      act(() => {
+        root.unmount();
+      });
+      document.body.removeChild(container);
+    },
+  };
+};
 
 // Helper function to render Layout with router
-// FIX: Using testing-library's render ensures React finishes painting before tests run
 const renderWithRouter = (
   ui: React.ReactElement,
   initialEntries: string[] = ['/']
 ): { container: HTMLElement; unmount: () => void } => {
-  const result = render(
+  return render(
     <MemoryRouter initialEntries={initialEntries}>
       {ui}
     </MemoryRouter>
   );
-
-  return {
-    container: result.container,
-    unmount: result.unmount,
-  };
 };
 
 describe('Layout Component', () => {
+  // 3. Use vi.fn() instead of jest.fn()
   const mockLogout = vi.fn();
 
   beforeEach(() => {
+    // 4. Use vi.clearAllMocks()
     vi.clearAllMocks();
-    cleanup(); // Clean up DOM between tests
+    document.body.innerHTML = '';
     
     // Default mock: unauthenticated user
     mockUseAuth.mockReturnValue({
@@ -209,6 +230,7 @@ describe('Layout Component', () => {
         (link) => link.textContent === 'Home'
       );
       expect(homeLink).toBeTruthy();
+      
       if (homeLink) {
         expect(homeLink.className).toContain('active');
       }
@@ -227,7 +249,9 @@ describe('Layout Component', () => {
         (link) => link.textContent === 'Home'
       );
       expect(homeLink).toBeTruthy();
+      
       if (homeLink && homeLink.className) {
+        // Vitest (via Chai) supports boolean assertions
         expect(homeLink.className.includes('active') || !homeLink.className.includes('active')).toBeTruthy();
       }
       unmount();

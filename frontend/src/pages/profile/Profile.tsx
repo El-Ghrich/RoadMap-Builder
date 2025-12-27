@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import Layout from "../../components/layout/Layout";
 import { useAuth } from "../../context/AuthContext";
 import { api } from "../../services/http/axios";
-import { User, Mail, Calendar, UserCircle, Edit2, LogOut, CheckCircle2 } from "lucide-react";
+import { Mail, Calendar, UserCircle, Edit2, LogOut, CheckCircle2 } from "lucide-react";
 import styles from "./Profile.module.css";
 
 interface ProfileData {
@@ -15,6 +15,11 @@ interface ProfileData {
   age: number | null;
   avatar: string | null;
   isActive: boolean;
+  stats?: {
+    roadmaps: number;
+    followers: number;
+    following: number;
+  };
 }
 
 interface ApiResponse<T> {
@@ -231,7 +236,7 @@ export default function Profile() {
               <div className={styles.cardContent}>
                 <div className={styles.statsGrid}>
                   <div className={styles.statItem}>
-                    <div className={styles.statValue}>0</div>
+                    <div className={styles.statValue}>{profile?.stats?.roadmaps || 0}</div>
                     <div className={styles.statLabel}>Roadmaps</div>
                   </div>
                   <div className={styles.statItem}>
@@ -251,4 +256,3 @@ export default function Profile() {
     </Layout>
   );
 }
-

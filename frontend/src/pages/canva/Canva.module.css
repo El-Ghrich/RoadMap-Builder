@@ -1,0 +1,296 @@
+.canvasContainer {
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 4rem); /* Account for header */
+  min-height: calc(100vh - 4rem);
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.05) 0%, rgba(249, 115, 22, 0.03) 100%);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.canvasWrapper {
+  position: relative;
+  width: 100%;
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.canvasHeader {
+  position: relative;
+  width: 100%;
+  z-index: 10;
+  padding: 1rem 2rem;
+  background: white;
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-shrink: 0;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.backButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.backButton:hover {
+  background-color: var(--secondary-100);
+  color: var(--text-primary);
+  border-color: var(--primary-300);
+}
+
+.canvasDescription {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0.25rem 0 0 0;
+}
+
+.actionButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background-color: var(--primary-600);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.actionButton:hover:not(:disabled) {
+  background-color: var(--primary-700);
+}
+
+.actionButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.canvasTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.canvasActions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.jsonViewer {
+  position: absolute;
+  top: 4rem;
+  right: 1rem;
+  z-index: 10;
+  width: 300px;
+  max-height: calc(100vh - 5rem);
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  overflow-y: auto;
+  border: 1px solid var(--border-color);
+}
+
+.jsonViewerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.jsonViewerTitle {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.jsonViewerToggle {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+}
+
+.jsonViewerToggle:hover {
+  color: var(--text-primary);
+}
+
+.jsonContent {
+  font-family: 'Courier New', monospace;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  white-space: pre-wrap;
+  word-break: break-all;
+  background: var(--secondary-100);
+  padding: 0.75rem;
+  border-radius: 0.25rem;
+  max-height: calc(100vh - 8rem);
+  overflow-y: auto;
+}
+
+.jsonContent code {
+  font-family: inherit;
+}
+
+.canvasContent {
+  width: 100%;
+  height: 100%;
+  flex: 1;
+  min-height: 0;
+  position: relative;
+}
+
+/* ReactFlow custom styles */
+:global(.react-flow__node) {
+  font-family: inherit;
+}
+
+:global(.react-flow__handle) {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--primary-600);
+  border: 2px solid white;
+}
+
+:global(.react-flow__handle-top) {
+  top: -4px;
+}
+
+:global(.react-flow__handle-bottom) {
+  bottom: -4px;
+}
+
+:global(.react-flow__edge-path) {
+  stroke: var(--primary-500);
+  stroke-width: 2;
+}
+
+.loadingState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  text-align: center;
+  gap: 1rem;
+}
+
+.loadingState p {
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+
+.spinner {
+  width: 3rem;
+  height: 3rem;
+  border: 3px solid var(--primary-200);
+  border-top-color: var(--primary-600);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+:global(.react-flow__edge.animated .react-flow__edge-path) {
+  stroke-dasharray: 5;
+  animation: dashdraw 0.5s linear infinite;
+}
+
+@keyframes dashdraw {
+  to {
+    stroke-dashoffset: -10;
+  }
+}
+
+:global(.react-flow__controls) {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-color);
+}
+
+:global(.react-flow__controls-button) {
+  background: white;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+:global(.react-flow__controls-button:hover) {
+  background: var(--secondary-100);
+}
+
+:global(.react-flow__background) {
+  background-color: var(--secondary-100);
+}
+
+:global(.react-flow__background-pattern) {
+  stroke: var(--border-color);
+  opacity: 0.3;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .canvasWrapper {
+    height: calc(100vh - 3rem);
+    margin-top: 3rem;
+  }
+
+  .canvasHeader {
+    padding: 0.75rem 1rem;
+  }
+
+  .canvasTitle {
+    font-size: 1.25rem;
+  }
+
+  .jsonViewer {
+    position: fixed;
+    top: auto;
+    bottom: 1rem;
+    right: 1rem;
+    left: 1rem;
+    width: auto;
+    max-height: 40vh;
+  }
+}
+

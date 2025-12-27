@@ -42,17 +42,26 @@ export default function Layout({ children, hideNav = false }: LayoutProps) {
             <Link to="/" className={isActive("/") ? styles.active : ""}>
               Home
             </Link>
-            <a href="#about">About</a>
-            <a href="#contact">Contact</a>
+            {isAuthenticated && (
+              <Link to="/roadmaps" className={isActive("/roadmaps") ? styles.active : ""}>
+                My Roadmaps
+              </Link>
+            )}
+            <Link to="/about" className={isActive("/about") ? styles.active : ""}>
+              About
+            </Link>
+            <Link to="/contact" className={isActive("/contact") ? styles.active : ""}>
+              Contact
+            </Link>
           </div>
 
           {/* Desktop Auth Buttons */}
           <div className={styles.navAuthButtons}>
             {isAuthenticated ? (
               <>
-                <span style={{ fontSize: "0.875rem", color: "var(--text-secondary)", marginRight: "1rem" }}>
+                <Link to="/profile" style={{ fontSize: "0.875rem", color: "var(--text-secondary)", marginRight: "1rem", textDecoration: "none" }}>
                   {user?.username || user?.email}
-                </span>
+                </Link>
                 <button onClick={handleLogout} className={styles.signInLink} style={{ cursor: "pointer", border: "none", background: "none" }}>
                   Logout
                 </button>
@@ -89,18 +98,23 @@ export default function Layout({ children, hideNav = false }: LayoutProps) {
               <Link to="/" className={styles.mobileMenuLink}>
                 Home
               </Link>
-              <a href="#about" className={styles.mobileMenuLink}>
+              {isAuthenticated && (
+                <Link to="/roadmaps" className={styles.mobileMenuLink}>
+                  My Roadmaps
+                </Link>
+              )}
+              <Link to="/about" className={styles.mobileMenuLink}>
                 About
-              </a>
-              <a href="#contact" className={styles.mobileMenuLink}>
+              </Link>
+              <Link to="/contact" className={styles.mobileMenuLink}>
                 Contact
-              </a>
+              </Link>
               <div style={{ paddingTop: "0.75rem", borderTop: "1px solid var(--border-color)", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                 {isAuthenticated ? (
                   <>
-                    <div style={{ fontSize: "0.875rem", color: "var(--text-secondary)", padding: "0.5rem 0" }}>
+                    <Link to="/profile" style={{ fontSize: "0.875rem", color: "var(--text-secondary)", padding: "0.5rem 0", textDecoration: "none", display: "block" }}>
                       {user?.username || user?.email}
-                    </div>
+                    </Link>
                     <button onClick={handleLogout} className={styles.mobileMenuLink} style={{ cursor: "pointer", border: "none", background: "none", textAlign: "left", padding: "0.5rem 0" }}>
                       Logout
                     </button>

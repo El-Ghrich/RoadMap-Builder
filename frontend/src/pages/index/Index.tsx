@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import Layout from "../../components/layout/Layout";
 import { ArrowRight, Lightbulb, Users, Zap, Globe, Lock, Share2 } from "lucide-react";
 import styles from "./Index.module.css";
+import { useAuth } from "../../context/AuthContext";
 
 interface ValueProposition {
   icon: React.ReactNode;
@@ -42,7 +43,11 @@ const valuePropositions: ValueProposition[] = [
   },
 ];
 
+
+
 export default function Index() {
+
+
   return (
     <Layout>
       {/* Hero Section */}

@@ -2,6 +2,7 @@ import { DataSource } from "typeorm";
 import { IDatabaseConfig } from "../database.interface";
 import { UserEntity } from "../../models/user/user.entity";
 import { RefreshTokenEntity } from "../../models/refreshToken/refreshToken.entity";
+import { RoadmapEntity } from "../../models/roadmap/roadmap.entity";
 
 export const testDataSource = new DataSource({
     type: "postgres",
@@ -12,8 +13,8 @@ export const testDataSource = new DataSource({
     database: process.env.DB_TEST_NAME,
     synchronize: true,
     dropSchema: true,
-    logging: true,
-    entities: [UserEntity, RefreshTokenEntity],
+    logging: false,
+    entities: [UserEntity, RefreshTokenEntity, RoadmapEntity],
 });
 
 export class PostgresTestConfig implements IDatabaseConfig {
@@ -21,8 +22,10 @@ export class PostgresTestConfig implements IDatabaseConfig {
         return testDataSource;
     }
     async connect(): Promise<void> {
-        await testDataSource.initialize();
-        console.log("Database postgres is connected ")
+        if (!testDataSource.isInitialized) {
+            await testDataSource.initialize();
+            console.log("Database postgres is connected ")
+        }
     }
     async disconnect(): Promise<void> {
         await testDataSource.destroy();

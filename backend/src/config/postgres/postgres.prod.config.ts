@@ -1,6 +1,7 @@
 import { DataSource } from "typeorm";
 import { IDatabaseConfig } from "../database.interface";
 import { UserEntity } from "../../models/user/user.entity";
+import { RoadmapEntity } from "../../models/roadmap/roadmap.entity";
 
 export const prodDataSource = new DataSource({
     type: "postgres",
@@ -11,7 +12,7 @@ export const prodDataSource = new DataSource({
     database:process.env.DB_PROD_NAME,
     synchronize:true,
     dropSchema: true,  
-    entities: [UserEntity],
+    entities: [UserEntity, RoadmapEntity],
 });
 
 export class PostgresProdConfig implements IDatabaseConfig{
